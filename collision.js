@@ -1,10 +1,8 @@
 var collisionDemo = (function() {
     var doc = document,
-        canvas = doc.getElementsByTagName('canvas'),
-        ctx = [ canvas[0].getContext('2d'), 
-                canvas[1].getContext('2d'), 
-                canvas[2].getContext('2d') ],
-        tileSize = 16,
+        pal = doc.getElementById('palette').getContext('2d'),
+        map = doc.getElementById('tileEditor').getContext('2d'),
+        tileSize = 32,
         left = false,
         right = false,
         down = false,
@@ -29,9 +27,9 @@ var collisionDemo = (function() {
                 if (left) player.dx = -1;
                 if (right) player.dx = 1;
 
-                ctx[num].fillStyle = colour;        
-                ctx[num].fillRect(player.x, player.y, player.width, player.height);
-                ctx[num].clearRect(player.x - player.width, player.y, player.width, player.height);
+                pal[num].fillStyle = colour;        
+                pal[num].fillRect(player.x, player.y, player.width, player.height);
+                pal[num].clearRect(player.x - player.width, player.y, player.width, player.height);
 
             },
             drawMap : function(obj) {
@@ -42,12 +40,12 @@ var collisionDemo = (function() {
                     num = obj.num,
                     colour = obj.colour;
 
-                ctx[num].fillStyle = colour;
+                pal[num].fillStyle = colour;
             
                 for (i = 0; i < lenI; i++) {            
                     for (j = 0; j < lenJ; j++) {
                         if (map[i][j]) {
-                            ctx[num].fillRect(j * tileSize, i * tileSize, tileSize, tileSize);
+                            pal[num].fillRect(j * tileSize, i * tileSize, tileSize, tileSize);
                         }
                     }
                 } 
@@ -91,6 +89,9 @@ var collisionDemo = (function() {
                 */
             
             },
+            eventManager : function() {
+                
+            },
             bindEvents : function() {
                 window.addEventListener('click', function(e) {
                 
@@ -124,98 +125,15 @@ var collisionDemo = (function() {
                     }           
                 }, false);
             },
-            demo_1 : function() {
-                var mapObj = {
-                        num : 0,
-                        colour : 'red',
-                        map : [[0,0,0,0,0,0,0,0,0,0],
-                               [0,0,0,0,0,0,0,0,0,0],
-                               [0,0,0,0,0,0,0,0,0,0],
-                               [0,0,0,0,0,0,0,0,0,0],
-                               [0,0,0,0,0,0,0,0,0,0],
-                               [1,0,0,0,0,0,0,0,0,0],
-                               [1,1,0,0,0,0,0,0,0,0],
-                               [1,1,1,0,0,0,0,0,0,0],
-                               [1,0,1,1,0,0,0,0,0,0],
-                               [1,1,1,1,1,1,1,1,1,1]]                
-                    },
-                    charObj = {
-                        num : 0,
-                        colour : 'blue',
-                        player : new demo.createChar
-                    };
-            
-
-            
-                demo.drawMap(mapObj);
-            
-                setInterval(function() {
-                    demo.drawChar(charObj);
-                }, 25);
-            
-            
-            
-            },
-            demo_2 : function() {
-                var obj = {
-                    num : 1,
-                    colour : 'green',
-                    map : [[0,0,0,0,0,0,0,0,0,0],
-                           [0,0,0,0,0,0,0,0,0,0],
-                           [0,0,0,0,0,0,0,0,0,0],
-                           [0,0,0,0,0,0,0,0,0,0],
-                           [0,0,0,0,0,0,0,0,0,0],
-                           [1,0,0,0,0,0,0,0,0,0],
-                           [1,1,0,0,0,0,0,0,0,0],
-                           [1,1,1,0,0,0,0,0,0,0],
-                           [1,0,1,1,0,0,0,0,0,0],
-                           [1,1,1,1,1,1,1,1,1,1]]
-                };
-            
-                demo.drawMap(obj);
-            },
-            demo_3 : function() {
-            
-            
-            
-            
-            
-                var obj = {
-                    num : 2,
-                    colour : 'blue',
-                    map : [[0,0,0,0,0,0,0,0,0,0],
-                           [0,0,0,0,0,0,0,0,0,0],
-                           [0,0,0,0,0,0,0,0,0,0],
-                           [0,0,0,0,0,0,0,0,0,0],
-                           [0,0,0,0,0,0,0,0,0,0],
-                           [1,0,0,0,0,0,0,0,0,0],
-                           [1,1,0,0,0,0,0,0,0,0],
-                           [1,1,1,0,0,0,0,0,0,0],
-                           [1,0,1,1,0,0,0,0,0,0],
-                           [1,1,1,1,1,1,1,1,1,1]]
-                };
-            
-                demo.drawMap(obj);
-            },
             init : function() {
                 demo.bindEvents();
-                demo.demo_1();
-                demo.demo_2();
-                demo.demo_3();
                 demo.update();
-            
-            
-            
             }, 
             update : function() {
 
-            
-            
-            
             }
         };
     
     demo.init();
-    return demo;
     
 })();

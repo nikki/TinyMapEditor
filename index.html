@@ -4,23 +4,25 @@
     <meta charset="utf-8" />
     <title></title>
     <style>
-        body { position: relative; width: 400px; margin: 0 auto; text-align: center; padding-top: 60px }
-        canvas { float: left }
-        canvas + canvas { margin: 64px 0 0 30px }
+        body { position: relative; width: 320px; margin: 0 auto; text-align: center; padding-top: 60px }
+        canvas:hover { cursor: pointer }
+        #tileEditor { background: url('bg.png') left top no-repeat; margin-bottom: 30px }
     </style>
 </head>
 <body>
     
-    <!--<canvas width="160" height="160"></canvas>
-    <canvas width="160" height="160"></canvas>
-    <canvas width="320" height="160"></canvas>-->
     
     
     <!--<textarea></textarea>-->
     
+    <canvas id="tileEditor"></canvas>
+    <canvas id="palette"></canvas>
     
+    <input id="clear" type="button" value="Clear Canvas" />
+    <input id="erase" type="button" value="Tile Eraser" />
+    <input id="build" type="button" value="Build Collision Map" />
 
-    <!--<script src="collision.js"></script>-->    
+    <script src="collision.js"></script>   
     <script src="tileEditor.js"></script>
     
 </body>

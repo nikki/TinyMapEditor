@@ -1,102 +1,148 @@
 var collisionDemo = (function() {
-    var doc = document,
-        pal = doc.getElementById('palette').getContext('2d'),
-        map = doc.getElementById('tileEditor').getContext('2d'),
-        tileSize = 32,
+    var pal,
+        map,
+        numTiles,        
+        tileSize,
+        alpha,
+        testBtn,
+        
+        player,
         left = false,
         right = false,
-        down = false,
+        up = false,
 
         demo = {
             createChar : function() {
                 this.height = 32;
                 this.width = 16;
-                this.x = 50;
-                this.y = 50;
+                this.x = (numTiles * tileSize) / 2 - (this.width / 2);
+                this.y = 0;
                 this.dx = 1;
                 this.dy = 1;
-                this.grav = 100;
+                this.vel = 0;
+                this.grav = 5;
             
                 return this;
             },
-            drawChar : function(obj) {
-                var player = obj.player,
-                    num = obj.num,
-                    colour = obj.colour;
-
-                if (left) player.dx = -1;
-                if (right) player.dx = 1;
-
-                pal[num].fillStyle = colour;        
-                pal[num].fillRect(player.x, player.y, player.width, player.height);
-                pal[num].clearRect(player.x - player.width, player.y, player.width, player.height);
-
+            newChar : function(e) {
+                if (e.target.id === 'test') {
+                    player = new demo.createChar;
+                    map.fillStyle = 'purple';
+                    demo.update();
+                }                
             },
-            drawMap : function(obj) {
-                var i, j, 
-                    lenI = obj.map.length,
-                    lenJ = obj.map[0].length,
-                    map = obj.map,
-                    num = obj.num,
-                    colour = obj.colour;
+            drawChar : function() {
 
-                pal[num].fillStyle = colour;
-            
-                for (i = 0; i < lenI; i++) {            
-                    for (j = 0; j < lenJ; j++) {
-                        if (map[i][j]) {
-                            pal[num].fillRect(j * tileSize, i * tileSize, tileSize, tileSize);
-                        }
-                    }
-                } 
-            },
-            checkCollision : function(obj) {
-                var i, j, 
-                    lenI = obj.map.length,
-                    lenJ = obj.map[0].length;
-                
-                for (i = 0; i < lenI; i++) {            
-                    for (j = 0; j < lenJ; j++) {
-                        if (obj.map[i][j]) {
-
-                        }
-                    }
-                }
-            
-            
-            
-            
-            
                 /*
-            
-                collisionCheck: function(bArray){
-                  for(var i=0,len=bArray.length; i<len; ++i){
-                    for(var j=0,len2=bArray[i].length; j<len2; ++j){
-                      if(!bArray[i][j].getType()) continue;
-                      var x = bArray[i][j].getX(), y = bArray[i][j].getY();
-                      var x2 = x+blockSize, y2 = y+blockSize;
-                      var overlapping = (x2>this.x) && (x<(this.x+this.width)) && (y2>this.y) && (y<(this.y+this.height));
-                      if (overlapping) this.x = 0; // I don't know why you'd do this, but it's what you have
-                    }
-                  }
-                  // Should this function return anything?
+                if (up) {
+                    player.dy = -1;
+                    player.grav *= 0.9;
+                } else {
+                    player.dy = 1;
+                    player.grav = 10;
                 }
+*/  
+                // map.clearRect(player.x, player.y, player.width, player.height);
+                map.fillRect(player.x, player.y, player.width, player.height);
+                // map.clearRect(player.x, player.y, 1, 1);
+                // map.clearRect(player.dx === 1 ? player.x - player.width : player.x + player.width, player.dy === 1 ? player.y - player.height : player.y + player.height, player.width, player.height);
             
-            
-            
-            
-            
-                */
+                player.x += player.dx * player.vel;
+                player.y += player.dy * player.grav;
             
             },
-            eventManager : function() {
+            checkCollision : function() {
+                var row = (player.y / tileSize | 0) + 1, // 1, not zero indexed
+                    col = (player.x / tileSize | 0) + 1;
+                    
+                // console.log(alpha[row]);
+
+                if (player.y < (numTiles * tileSize - player.height) && row >= 0 && col >= 0) {
+                    if (alpha[row][col - 1] === 1) {
+                        player.y = (row * tileSize) - player.height;
+                    } else if (typeof alpha[row][col - 1] === 'object') {
+                        player.y = (row * tileSize) - player.height;
+                    }
+                    
+                    if (left && player.x > 0) {
+                        if (alpha[row - 1][col - 1] === 1) {
+                            player.vel = 0
+                        } else {
+                            player.dx = -1;
+                            player.vel = 3;                            
+                        }
+                    } else if (right && player.x < numTiles * tileSize) {
+                        if (alpha[row - 1][col] === 1) {
+                            player.vel = 0
+                        } else {
+                            player.dx = 1;
+                            player.vel = 3;                            
+                        }
+                    } else {
+                        player.vel = 0;
+                    }
+                    
+                    
+                } else {
+                    player.y = numTiles * tileSize - player.height;
+                }
+                /*
+                if (player.x < (numTiles * tileSize - player.width) && row >= 0 && col >= 0) {
+                    console.log(alpha[row][col]);
+                }
+                */
+/*
                 
+                if (player.x > 0 && player.x < numTiles * tileSize - player.width && row >= 0 && col >= 0) {
+                    if (left) {
+                        
+
+                        
+                        player.dx = -1;
+                        player.vel = 3;
+                    } else if (right) {
+                        player.dx = 1;
+                        player.vel = 3;
+                    } else {
+                        player.vel = 0;
+                    }
+                }
+ */               
+                
+                /*
+                if (left && player.x > 0) {
+                    player.dx = -1;
+                    player.vel = 3;
+                } else if (right && player.x < numTiles * tileSize - player.width) {
+                    player.dx = 1;
+                    player.vel = 3;
+                } else {
+                    player.vel = 0;
+                }  
+                
+                */          
+            },
+            drawMap : function() { // lazy lazy lazy *tut*
+                var i, j;
+                
+                ctx.fillStyle = 'black';
+                
+                for (i = 0; i < numTiles; i++) {
+                    for (j = 0; j < numTiles; j++) {
+                        if (alpha[i][j] === 1) {
+                            map.fillRect(j * tileSize, i * tileSize, tileSize, tileSize);
+                        } else if (typeof alpha[i][j] === 'object') {
+                            // console.log(alpha);
+                            //map.putImageData(alpha[i][j].toString(), j * tileSize, i * tileSize, tileSize, tileSize);
+                        }
+                    }
+                }
             },
             bindEvents : function() {
-                window.addEventListener('click', function(e) {
-                
+                testBtn.addEventListener('click', function(e) {
+                    demo.newChar(e);
                 }, false);
-            
+                
                 window.addEventListener('keydown', function(e) {
                     switch (e.keyCode) {
                         case 37:
@@ -125,15 +171,27 @@ var collisionDemo = (function() {
                     }           
                 }, false);
             },
-            init : function() {
+            init : function(obj) {
+                pal = obj.pal;
+                map = obj.map;
+                numTiles = obj.numTiles;
+                tileSize = obj.tileSize;
+                alpha = obj.alpha;
+                testBtn = obj.testBtn;
+
                 demo.bindEvents();
-                demo.update();
+                testBtn.disabled = false;
             }, 
             update : function() {
-
+                return setInterval(function() {
+                    map.canvas.width = map.canvas.width;
+                    demo.drawMap();                     
+                    demo.drawChar();
+                    demo.checkCollision();                              
+                }, 25);
             }
         };
     
-    demo.init();
+    return demo.init;
     
 })();

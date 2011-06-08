@@ -2,17 +2,19 @@ var tileEditor = (function() {
     var doc = document,
         pal = doc.getElementById('palette').getContext('2d'),
         map = doc.getElementById('tileEditor').getContext('2d'),
-        tiles = [],
+        buildBtn = doc.getElementById('build'),
+        testBtn = doc.getElementById('test'),        
         numTiles = 10,
-        tileSize = 32,
+        tileWidth = 32.
+        tileHeight = 32,
         srcTile = 0,        
         sprite = new Image(),
-        
+
         app = {
             getTile : function(e) {
                 if (e.target.nodeName === 'CANVAS') {
-                    var row = (e.offsetX / tileSize | 0),  // not zero indexed, zero used or empty tile
-                        col = (e.offsetY / tileSize | 0);
+                    var row = (e.offsetX / tileWidth | 0),  // not zero indexed, zero used or empty tile
+                        col = (e.offsetY / tileHeight | 0);
                     
                     if (e.target.id === 'palette') srcTile = { row : row, /* row your boat*/ col : col };
                     return { row : row, col : col };                     
@@ -24,7 +26,7 @@ var tileEditor = (function() {
                 if (e.target.id === 'tileEditor' && srcTile) {
                     destTile = app.getTile(e);
                     
-                    map.clearRect(destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
+                    map.clearRect(destTile.row * tileWidth, destTile.col * tileHeight, tileWidth, tileHeight);
                     map.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
                 }
             },
@@ -33,12 +35,13 @@ var tileEditor = (function() {
                     ctx = rect.getContext('2d');
                     
                 rect.width = rect.height = tileSize;
+                rect.id = 'sample';
                 //rect.style.position = 'absolute';
                 //rect.style.left = e.layerX + 'px';
                 //rect.style.top = e.layerY + 'px';
 
                 ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize);                
-                doc.body.appendChild(rect);
+                doc.getElementById('container').children[3].appendChild(rect);
 
                 app.drawTool = function(e) {
                     rect.width = tileSize; // clears rect
@@ -67,13 +70,15 @@ var tileEditor = (function() {
             clearMap : function(e) {
                 if (e.target.id === 'clear') {
                     map.canvas.width = map.canvas.width;
+                    buildBtn.disabled = false;
+                    testBtn.disabled = true;
                 }
             },         
             buildMap : function(e) {
                 if (e.target.id === 'build') {
                     var alpha = [],  // collision map
                         // tiles = [],  // graphical tiles (not currently needed, can be used to create standard tile map)
-                        temp = [],
+                        obj = {},
                         pixels,
                         len,
                         x, y, z;
@@ -97,14 +102,24 @@ var tileEditor = (function() {
                             } else if (alpha[x][y].indexOf(255) === -1) { // transparent tile
                                 alpha[x][y] = 0;
                             } else { // partial alpha, build pixel map
-                                alpha[x][y] = app.sortPartial(alpha[x][y]);
+                                // alpha[x][y] = app.sortPartial(alpha[x][y]);
                             }
                         }
                     }
                     
-                    console.log(alpha);
+                    obj = {
+                        pal : pal,
+                        map : map,
+                        numTiles : numTiles,
+                        tileSize : tileSize,
+                        alpha : alpha,
+                        testBtn : testBtn
+                    };
                     
-                }      
+                    collisionDemo(obj);
+                    build.disabled = true;
+                    
+                }                      
             },
             sortPartial : function(arr) {
                 var len = arr.length,
@@ -124,6 +139,9 @@ var tileEditor = (function() {
                 }
 
                 return temp;
+            },
+            toggleBuild : function() {
+                // grey out button if map is built             
             },
             bindEvents : function() {
                 window.addEventListener('click', function(e) {

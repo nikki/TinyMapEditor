@@ -1,99 +1,109 @@
-var tileEditor = (function() {
+var tinyMapEditor = (function() {
     var doc = document,
         pal = doc.getElementById('palette').getContext('2d'),
         map = doc.getElementById('tileEditor').getContext('2d'),
-        buildBtn = doc.getElementById('build'),
-        testBtn = doc.getElementById('test'),        
+        buildBtn = doc.getElementById('build'),     
         numTiles = 10,
         tileSize = 32,
         srcTile = 0,        
         sprite = new Image(),
+        
+        // tiles, // will be used for graphic tiles layer
+        alpha,
+        player,
+        draw,
+        left = false,
+        right = false,
+        up = false,
 
         app = {
             getTile : function(e) {
                 if (e.target.nodeName === 'CANVAS') {
-                    var row = (e.offsetX / tileSize | 0),  // not zero indexed, zero used or empty tile
+                    var row = (e.offsetX / tileSize | 0),
                         col = (e.offsetY / tileSize | 0);
                     
-                    if (e.target.id === 'palette') srcTile = { row : row, /* row your boat*/ col : col };
+                    if (e.target.id === 'palette') srcTile = { row : row, col : col };
                     return { row : row, col : col };                     
                 }
             },
             setTile : function(e) {
                 var destTile;
                 
-                if (e.target.id === 'tileEditor' && srcTile) {
+                if (e.target.id === 'tileEditor' && srcTile && !draw) {
                     destTile = app.getTile(e);
-                    
                     map.clearRect(destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
                     map.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
                 }
             },
             drawTool : function(e) {
-                var rect = document.createElement('canvas');
-                    ctx = rect.getContext('2d');
-                    
+                var rect = doc.createElement('canvas'),
+                    ctx = rect.getContext('2d'),
+                    eraser = function() {
+                        ctx.fillStyle = 'red';
+                        ctx.fillRect(0, 0, tileSize, tileSize);
+                        ctx.fillStyle = 'white';
+                        ctx.fillRect(2, 2, tileSize - 4, tileSize - 4);                        
+                        ctx.strokeStyle = 'red';
+                        ctx.lineWidth = 2;
+                        ctx.moveTo(tileSize, 0);
+                        ctx.lineTo(0, tileSize);
+                        ctx.stroke();                        
+                    };
+  
                 rect.width = rect.height = tileSize;
                 rect.id = 'sample';
-                //rect.style.position = 'absolute';
-                //rect.style.left = e.layerX + 'px';
-                //rect.style.top = e.layerY + 'px';
-
-                ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize);                
+                srcTile ? ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();  
                 doc.getElementById('container').children[3].appendChild(rect);
 
                 app.drawTool = function(e) {
-                    rect.width = tileSize; // clears rect
-                    
-                    if (srcTile) {
-                        ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize);
-                    } else {
-                        ctx.fillStyle = 'black';
-                        ctx.fillRect(0, 0, tileSize, tileSize);
-                    }
-                    
-                    // rect.style.left = e.layerX + 'px';
-                    // rect.style.top = e.layerY + 'px';            
+                    rect.width = tileSize;
+                    srcTile ? ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();        
                 }          
             },
             eraseTile : function(e) {
                 var destTile;
-
-                if (e.target.id === 'erase' && srcTile) {
-                    srcTile = 0;
-                } else if (e.target.id === 'tileEditor' && !srcTile) {
-                    destTile = app.getTile(e);
-                    map.clearRect(destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);                    
+                if (!draw) {
+                    if (e.target.id === 'erase' && srcTile) {
+                        srcTile = 0;
+                    } else if (e.target.id === 'tileEditor' && !srcTile) {
+                        destTile = app.getTile(e);
+                        map.clearRect(destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);                    
+                    }
                 }
             },
             clearMap : function(e) {
                 if (e.target.id === 'clear') {
                     map.canvas.width = map.canvas.width;
                     buildBtn.disabled = false;
-                    testBtn.disabled = true;
+                    demo.destroy();
                 }
             },         
             buildMap : function(e) {
                 if (e.target.id === 'build') {
-                    var alpha = [],  // collision map
-                        // tiles = [],  // graphical tiles (not currently needed, can be used to create standard tile map)
-                        obj = {},
+                    var obj = {},
                         pixels,
                         len,
                         x, y, z;
+                    
+                    // tiles = [];  // graphical tiles (not currently needed, can be used to create standard tile map)
+                    alpha = []; // collision map
 
                     for (x = 0; x < numTiles; x++) { // tiles across
                         // tiles[x] = [];
                         alpha[x] = [];
+                        
                         for (y = 0; y < numTiles; y++) { // tiles down
                             pixels = map.getImageData(y * tileSize, x * tileSize, tileSize, tileSize),
                             len = pixels.data.length;
 
-                            // tiles[x][y] = pixels; // store tile data
+                            // tiles[x][y] = pixels; // store ALL tile data
                             alpha[x][y] = [];
                         
                             for (z = 0; z < len; z += 4) {
-                                alpha[x][y][z / 4] = pixels.data[z + 3]; // store alpha data
+                                pixels.data[z] = 0;
+                                pixels.data[z + 1] = 0;
+                                pixels.data[z + 2] = 0;
+                                alpha[x][y][z / 4] = pixels.data[z + 3]; // store alpha data only
                             }
 
                             if (alpha[x][y].indexOf(0) === -1) { // solid tile
@@ -101,21 +111,15 @@ var tileEditor = (function() {
                             } else if (alpha[x][y].indexOf(255) === -1) { // transparent tile
                                 alpha[x][y] = 0;
                             } else { // partial alpha, build pixel map
-                                // alpha[x][y] = app.sortPartial(alpha[x][y]);
+                                alpha[x][y] = {
+                                    tiles : pixels, // (temporarily) used for drawing map
+                                    collision : app.sortPartial(alpha[x][y]) 
+                                }
                             }
                         }
                     }
                     
-                    obj = {
-                        pal : pal,
-                        map : map,
-                        numTiles : numTiles,
-                        tileSize : tileSize,
-                        alpha : alpha,
-                        testBtn : testBtn
-                    };
-                    
-                    collisionDemo(obj);
+                    demo.init();
                     build.disabled = true;
                     
                 }                      
@@ -139,9 +143,6 @@ var tileEditor = (function() {
 
                 return temp;
             },
-            toggleBuild : function() {
-                // grey out button if map is built             
-            },
             bindEvents : function() {
                 window.addEventListener('click', function(e) {
                     app.getTile(e);
@@ -150,26 +151,155 @@ var tileEditor = (function() {
                     app.drawTool(e);
                     app.clearMap(e);
                     app.buildMap(e);
-                }, false);
-
-                window.addEventListener('dragstart', function(e) {
-                    // app.setTile(e);
-                }, false);
+                }, false);  
                 
                 sprite.addEventListener('load', function() {
                     map.canvas.width = map.canvas.height = numTiles * tileSize;
                     pal.canvas.width = this.width;
                     pal.canvas.height = this.height;
                     pal.drawImage(this, 0, 0);
-                });
+                });           
             },
             init : function() {
                 sprite.src = 'tilemap_32a.png';
-                
                 app.bindEvents();
             }
-        };
-    
+        },
+
+        demo = {
+            createChar : function() {
+                this.height = 32;
+                this.width = 16;
+                this.x = (numTiles * tileSize) / 2 - (this.width / 2);
+                this.y = 0;
+                this.dx = 1;
+                this.dy = 1;
+                this.vel = 0;
+                this.grav = 10;
+
+                return this;
+            },
+            drawChar : function() {
+                map.fillStyle = 'purple';
+                map.fillRect(player.x, player.y, player.width, player.height);            
+                
+                player.x += player.dx * player.vel;
+                player.y += player.dy * player.grav;
+            },
+            checkCollision : function() {
+                var row = (player.y / tileSize | 0),
+                    col = (player.x / tileSize | 0);
+
+                if (player.y <= (numTiles * tileSize - player.height) && row >= 0 && col >= 0) {
+                    if (typeof alpha[row][col] === 'object') {
+                        // player.y = (row * tileSize - player.height) - (tileSize - alpha[row + 1][col].collision[player.x % tileSize]);                         
+                        // player.y = 50;
+                    } else if (alpha[row + 1][col] === 1) {
+                        player.y = (row + 1) * tileSize - player.height; 
+                    }
+                } else {
+                    player.y = numTiles * tileSize - player.height;
+                }
+                
+                if (left && player.x > 0) {
+                    player.dx = -1;
+                    if (alpha[row][col] === 1) {
+                        player.vel = 0;
+                    } else if (typeof alpha[row][col] === 'object') {
+                        // player.y = (row * tileSize - player.height) - (tileSize - alpha[row][col - 1].collision);
+                        
+                        
+                        player.y = (row * tileSize - player.height) - (tileSize - alpha[row][col].collision[player.x % tileSize]);
+                        
+
+                        player.vel = 3;                        
+                    } else {
+                        player.vel = 3;   
+                    }
+                } else if (right && player.x <= numTiles * tileSize - player.width) {
+                    player.dx = 1;
+                    if (alpha[row][col + 1] === 1) {
+                        if (player.x >= (col + 1) * tileSize - player.width) {
+                            player.vel = 0; 
+                            // console.log(player.x);
+                        } else {
+                            player.vel = 3;
+                        }
+                    } else {
+                        player.vel = 3;                            
+                    }
+                } else {
+                    player.vel = 0;
+                }
+
+
+         
+            },
+            drawMap : function() {
+                var i, j;
+
+                map.fillStyle = 'black';
+                for (i = 0; i < numTiles; i++) {
+                    for (j = 0; j < numTiles; j++) {
+                        if (alpha[i][j] === 1) {
+                            map.fillRect(j * tileSize, i * tileSize, tileSize, tileSize);
+                        } else if (typeof alpha[i][j] === 'object') {
+                            map.putImageData(alpha[i][j].tiles, j * tileSize, i * tileSize);
+                        }
+                    }
+                }
+            },
+            bindEvents : function() {
+                window.addEventListener('keydown', function(e) {
+                    switch (e.keyCode) {
+                        case 37:
+                            left = true;
+                            break;
+                        case 38:
+                            up = true;
+                            break;
+                        case 39:
+                            right = true;
+                            break;    
+                    }
+                }, false);
+
+                window.addEventListener('keyup', function(e) {              
+                    switch (e.keyCode) {
+                        case 37:
+                            left = false;
+                            break;
+                        case 38:
+                            up = false;
+                            break;
+                        case 39:
+                            right = false;
+                            break;
+                    }           
+                }, false);        
+            },
+            init : function() {
+                player = new demo.createChar;            
+                draw = setInterval(function() {
+                    demo.update();
+                }, 25);
+            },
+            update : function() {
+                map.canvas.width = map.canvas.width;
+                demo.drawMap();                     
+                demo.drawChar();
+                demo.checkCollision();                
+            },
+            destroy : function() {
+                clearInterval(draw);
+                player = draw = null;
+                alpha = [];
+            }
+        }
+
     app.init();
+    demo.bindEvents();    
+    
+    return app;
 
 })();

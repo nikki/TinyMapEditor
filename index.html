@@ -10,13 +10,15 @@
         #palette { cursor: pointer; float: left }
         #container div { width: 120px; padding-left: 30px; float: right }
         #container:last-child { margin-top: 30px }
-
+        h2 { clear: both; float: left; margin-top: 60px; display: none }
+        ul { float: left; clear: left; display: none }
     </style>
 </head>
 <body>
-    
-    
-    
+       
+    <h1>TinyMapEditor.js - version 0.1</h1>
+    <p>A tiny tile map editor for JavaScript based games. Very much a work in progress :)</p>    
+        
     <!--<textarea></textarea>-->
     <div id="container">
         <canvas id="tileEditor"></canvas>
@@ -25,16 +27,26 @@
         <div>
             <input id="erase" type="button" value="Tile Eraser" />
             <input id="clear" type="button" value="Clear Canvas" />
-            <input id="build" type="button" value="Build Collision Map" />
-            <input id="test" type="button" value="Test Collision Map" disabled />
+            <input id="build" type="button" value="Build &amp; Test Map" />
         </div>
         <div>
             <label>Currently Selected:</label>
         </div>
+        
+        <h2>Todo:</h2>
+        <ul>
+            <li>Click and hold to paint tiles</li>
+            <li>Graphical tile layers above collision layer</li>
+            <li>Settings object for setting heights/widths of tiles, maps, etc.</li>
+            <li>Upload sprite sheets dialog</li>
+            <li>Output maps to JSON</li>
+            <li>Pan map on right click</li>
+            <li>Split demo into its own module</li>
+        </ul>
+
     </div>
 
-    <script src="collision.js"></script>   
-    <script src="tileEditor.js"></script>
+    <script src="tileEditor.js"></script> 
     
 </body>
 </html>

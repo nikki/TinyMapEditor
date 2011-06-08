@@ -5,16 +5,15 @@ var tileEditor = (function() {
         buildBtn = doc.getElementById('build'),
         testBtn = doc.getElementById('test'),        
         numTiles = 10,
-        tileWidth = 32.
-        tileHeight = 32,
+        tileSize = 32,
         srcTile = 0,        
         sprite = new Image(),
 
         app = {
             getTile : function(e) {
                 if (e.target.nodeName === 'CANVAS') {
-                    var row = (e.offsetX / tileWidth | 0),  // not zero indexed, zero used or empty tile
-                        col = (e.offsetY / tileHeight | 0);
+                    var row = (e.offsetX / tileSize | 0),  // not zero indexed, zero used or empty tile
+                        col = (e.offsetY / tileSize | 0);
                     
                     if (e.target.id === 'palette') srcTile = { row : row, /* row your boat*/ col : col };
                     return { row : row, col : col };                     
@@ -26,7 +25,7 @@ var tileEditor = (function() {
                 if (e.target.id === 'tileEditor' && srcTile) {
                     destTile = app.getTile(e);
                     
-                    map.clearRect(destTile.row * tileWidth, destTile.col * tileHeight, tileWidth, tileHeight);
+                    map.clearRect(destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
                     map.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
                 }
             },

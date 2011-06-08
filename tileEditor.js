@@ -136,11 +136,8 @@ var tinyMapEditor = (function() {
                             temp[i][j] = arr[j * tileSize + i];
                         }
                     }
-                    
                     temp[i] = temp[i].indexOf(255); 
-                    
                 }
-
                 return temp;
             },
             bindEvents : function() {
@@ -174,7 +171,7 @@ var tinyMapEditor = (function() {
                 this.y = 0;
                 this.dx = 1;
                 this.dy = 1;
-                this.vel = 0;
+                this.vel = 3;
                 this.grav = 10;
 
                 return this;
@@ -189,51 +186,42 @@ var tinyMapEditor = (function() {
             checkCollision : function() {
                 var row = (player.y / tileSize | 0),
                     col = (player.x / tileSize | 0);
-
-                if (player.y <= (numTiles * tileSize - player.height) && row >= 0 && col >= 0) {
-                    if (typeof alpha[row][col] === 'object') {
-                        // player.y = (row * tileSize - player.height) - (tileSize - alpha[row + 1][col].collision[player.x % tileSize]);                         
-                        // player.y = 50;
+                
+                if (player.y < numTiles * tileSize - player.height && row >= 0 && col >= 0) {
+                    console.log(row);
+                    if (typeof alpha[row + 1][col] === 'object') {
+                        console.log((row + 1) * tileSize - player.height - (tileSize - alpha[row + 1][col].collision[player.x % tileSize]), player.y);
+                        player.y = (row + 1) * tileSize - player.height - (tileSize - alpha[row + 1][col].collision[player.x % tileSize]);
                     } else if (alpha[row + 1][col] === 1) {
-                        player.y = (row + 1) * tileSize - player.height; 
+                        player.y = (row + 1) * tileSize - player.height;                      
+                    } else if (alpha[row + 1][col] === 0 && alpha[row + 1][col + 1] === 1 && player.x > (col + 1) * tileSize - player.width) {
+                        player.y = (row + 1) * tileSize - player.height;
                     }
                 } else {
                     player.y = numTiles * tileSize - player.height;
                 }
-                
+
                 if (left && player.x > 0) {
                     player.dx = -1;
                     if (alpha[row][col] === 1) {
                         player.vel = 0;
-                    } else if (typeof alpha[row][col] === 'object') {
-                        // player.y = (row * tileSize - player.height) - (tileSize - alpha[row][col - 1].collision);
-                        
-                        
-                        player.y = (row * tileSize - player.height) - (tileSize - alpha[row][col].collision[player.x % tileSize]);
-                        
-
-                        player.vel = 3;                        
                     } else {
-                        player.vel = 3;   
-                    }
-                } else if (right && player.x <= numTiles * tileSize - player.width) {
+                        player.vel = 3;
+                    }                  
+                } else if (right && player.x < numTiles * tileSize - player.width) {
                     player.dx = 1;
                     if (alpha[row][col + 1] === 1) {
                         if (player.x >= (col + 1) * tileSize - player.width) {
                             player.vel = 0; 
-                            // console.log(player.x);
                         } else {
                             player.vel = 3;
                         }
                     } else {
                         player.vel = 3;                            
-                    }
+                    }             
                 } else {
                     player.vel = 0;
                 }
-
-
-         
             },
             drawMap : function() {
                 var i, j;

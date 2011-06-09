@@ -2,38 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <title></title>
-    <style>
-        body { font: 12px/16px Helvetica, Verdana, 'san-serif'; width: 900px; margin: 0 auto; text-align: center }
-        #container { position: relative; width: 470px; margin: 60px auto 0; text-align: left }
-        #tileEditor { background: url('bg.png') left top no-repeat; float: left; margin-bottom: 30px; cursor: pointer }
-        #palette { cursor: pointer; float: left }
-        #container div { width: 120px; padding-left: 30px; float: right }
-        #container:last-child { margin-top: 30px }
-        h2 { clear: both; float: left; margin-top: 60px; display: none }
-        ul { float: left; clear: left; display: none }
-    </style>
+    <title>2D Tile Map Editor for JavaScript Games</title>
+    <link rel="stylesheet" href="tinyMapEditor.css">
 </head>
 <body>
        
-    <h1>TinyMapEditor.js - version 0.1</h1>
-    <p>A tiny tile map editor for JavaScript based games. Very much a work in progress :)</p>    
-        
-    <!--<textarea></textarea>-->
-    <div id="container">
-        <canvas id="tileEditor"></canvas>
-        <canvas id="palette"></canvas>
+    <header>
+        <h1>tinyMapEditor.js - version 0.1</h1>
+        <h2>A 2D tile map editor for JavaScript based games (work in progress).</h2>
+        <p>More about this project &amp source code here: 
+            <a href="http://nicolahibbert.com/curved-sloped-tiles-javascript-games">http://nicolahibbert.com/curved-sloped-tiles-javascript-games</a></p>
+    </header>
     
-        <div>
-            <input id="erase" type="button" value="Tile Eraser" />
-            <input id="clear" type="button" value="Clear Canvas" />
-            <input id="build" type="button" value="Build &amp; Test Map" />
-        </div>
-        <div>
-            <label>Currently Selected:</label>
-        </div>
+    <section>
+        <canvas id="tileEditor"></canvas>       
+    </section>
+    
+    <menu>
+        <ul>
+            <li id="options">
+                <label>Map Options</label>
+                <p><label>Tile size:</label><input type="text" value="32" maxlength="3" disabled /><span>px</span></p>
+                <p><label>Map width:</label><input type="text" value="10" maxlength="3" disabled /><span>tiles</span></p>
+                <p><label>Map height:</label><input type="text" value="10" maxlength="3" disabled /><span>tiles</span></p>
+            </li>
+            <li id="tiles">
+                <label>Tiles</label>
+                <canvas id="palette"></canvas>               
+                <input type="file" disabled />  
+            </li>
+            <li id="selected">
+                <label>Selected Tile</label> 
+            </li>            
+            <li id="layers">
+                <label>Layers</label>
+                <ul>
+                    <li>
+                        <p>Collision</p>
+                    </li>
+                </ul>                    
+            </li>
+            <li id="tools">
+                <label>Tools</label>
+                <p><input id="erase" type="button" value="Tile Eraser" /></p>
+                <p><input id="clear" type="button" value="Clear Canvas" /></p>
+                <p><input id="build" type="button" value="Build Map" /></p>
+                <p><input id="test" type="button" value="Test Map" disabled /></p>                
+            </li>                        
+        </ul>
         
-        <h2>Todo:</h2>
+    </menu>
+    
+    <output>
+<textarea>
+1. Create tile map. 
+2. ??? 
+3. Profit!
+</textarea>
+    </output>   
+    
+
+        
+        <!--<h2>Todo:</h2>
         <ul>
             <li>Click and hold to paint tiles</li>
             <li>Graphical tile layers above collision layer</li>
@@ -42,11 +72,10 @@
             <li>Output maps to JSON</li>
             <li>Pan map on right click</li>
             <li>Split demo into its own module</li>
-        </ul>
+        </ul>-->
 
-    </div>
 
-    <script src="tileEditor.js"></script> 
+    <script src="tileEditor.js"></script>
     
 </body>
 </html>

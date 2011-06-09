@@ -1,12 +1,13 @@
 var tinyMapEditor = (function() {
-    var doc = document,
+    var win = window,
+        doc = document,
         pal = doc.getElementById('palette').getContext('2d'),
         map = doc.getElementById('tileEditor').getContext('2d'),
         numTiles = 10,
         tileSize = 32,
         srcTile = 0,      
         sprite = new Image(),
-        tiles, // used for demo, not *really* needed presently
+        tiles, // used for demo, not *really* needed atm
         alpha,
         
         player,
@@ -83,7 +84,7 @@ var tinyMapEditor = (function() {
                         len,
                         x, y, z;
                     
-                    tiles = [];  // graphical tiles (not currently needed, can be used to create standard tile map)
+                    tiles = []; // graphical tiles (not currently needed, can be used to create standard tile map)
                     alpha = []; // collision map
 
                     for (x = 0; x < numTiles; x++) { // tiles across
@@ -152,10 +153,10 @@ var tinyMapEditor = (function() {
                 };
                 
                 output = 'var collisionMap = ' + JSON.stringify(output);
-                document.getElementsByTagName('textarea')[0].value = output;
+                doc.getElementsByTagName('textarea')[0].value = output;
             },
             bindEvents : function() {
-                window.addEventListener('click', function(e) {
+                win.addEventListener('click', function(e) {
                     app.setTile(e);
                     app.eraseTile(e);
                     app.getTile(e);
@@ -203,12 +204,12 @@ var tinyMapEditor = (function() {
                 var row = (player.y / tileSize | 0),
                     col = (player.x / tileSize | 0),
                     keys = demo.keys;
-                
-                if (player.y < numTiles * tileSize - player.height && row >= 0 && col >= 0) {
-                    // console.log(row);
-                    if (typeof alpha[row + 1][col] === 'object') {
-                        // console.log((row + 1) * tileSize - player.height - (tileSize - alpha[row + 1][col].collision[player.x % tileSize]), player.y);
-                        player.y = (row + 1) * tileSize - player.height - (tileSize - alpha[row + 1][col].collision[player.x % tileSize]);
+                    
+                if (player.y < numTiles * tileSize && row < 9) {
+                    if (typeof alpha[row][col] === 'object') {               
+                        player.y = (row + 1) * tileSize - player.height - (tileSize - alpha[row][col][player.x % tileSize]);
+                    } else if (typeof alpha[row + 1][col] === 'object') {
+                        player.y = (row + 1) * tileSize - player.height - (tileSize - alpha[row + 1][col][player.x % tileSize]);
                     } else if (alpha[row + 1][col] === 1) {
                         player.y = (row + 1) * tileSize - player.height;                      
                     } else if (alpha[row + 1][col] === 0 && alpha[row + 1][col + 1] === 1 && player.x > (col + 1) * tileSize - player.width) {
@@ -269,7 +270,7 @@ var tinyMapEditor = (function() {
             bindEvents : function() {
                 var keys = demo.keys;
                 
-                window.addEventListener('keydown', function(e) {
+                win.addEventListener('keydown', function(e) {
                     switch (e.keyCode) {
                         case 37:
                             keys.left = true;
@@ -284,7 +285,7 @@ var tinyMapEditor = (function() {
                     }
                 }, false);
 
-                window.addEventListener('keyup', function(e) {              
+                win.addEventListener('keyup', function(e) {              
                     switch (e.keyCode) {
                         case 37:
                             keys.left = false;

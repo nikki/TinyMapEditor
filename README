@@ -1,3 +1,15 @@
 a JavaScript tile map editor for 2d platform games.  Very much a work in progress :)
+
+Currently only outputs maps for the collision layer.
+
+Todo:
+  Click and hold to paint tiles 
+  Graphical tile layers above collision layer    
+  Settings object for setting heights/widths of tiles, maps, etc.
+  Upload sprite sheets dialog
+  Output maps to JSON
+  Pan map on right click
+  Split demo into its own module
+
 Read more about the development here: http://nicolahibbert.com/curved-sloped-tiles-javascript-games
 View a working demo here: http://nicolahibbert.com/demo/javascript-tile-map-editor/

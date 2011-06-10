@@ -71,7 +71,7 @@ var tinyMapEditor = (function() {
             },
             clearMap : function(e) {
                 if (e.target.id === 'clear') {
-                    map.canvas.width = map.canvas.width;
+                    map.clearRect(0, 0, map.canvas.width, map.canvas.height);
                     demo.destroy();
                     test.disabled = true;
                     build.disabled = false;
@@ -314,7 +314,7 @@ var tinyMapEditor = (function() {
                 }, 25);
             },
             update : function() {
-                map.canvas.width = map.canvas.width;
+                map.clearRect(0, 0, map.canvas.width, map.canvas.height);
                 demo.drawMap();                                
                 demo.checkCollision();              
                 demo.drawChar();                                                       

@@ -17,7 +17,7 @@ header h2 { font-size: 14px; font-weight: normal; margin-bottom: 3px }
 
 /*************************************** Editor */
 section { margin: 80px auto; width: 320px; padding-right: 250px }
-canvas { cursor: pointer }
+canvas { cursor: pointer; position: relative }
 #tileEditor { background: url('bg.png') left top repeat }
 
 /*************************************** Tools  */

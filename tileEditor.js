@@ -18,16 +18,16 @@ var tinyMapEditor = (function() {
         app = {
             getTile : function(e) {
                 if (e.target.nodeName === 'CANVAS') {
-                    var row = (e.offsetX / tileSize | 0),
-                        col = (e.offsetY / tileSize | 0);
-                    
+                    var row = e.layerX / tileSize | 0,
+                        col = e.layerY / tileSize | 0;
+
                     if (e.target.id === 'palette') srcTile = { row : row, col : col };
                     return { row : row, col : col };                     
                 }
             },
             setTile : function(e) {
                 var destTile;
-                
+
                 if (e.target.id === 'tileEditor' && srcTile && !draw) {
                     destTile = app.getTile(e);
                     map.clearRect(destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
@@ -157,9 +157,9 @@ var tinyMapEditor = (function() {
             },
             bindEvents : function() {
                 win.addEventListener('click', function(e) {
-                    app.setTile(e);
+                    app.setTile(e);                      
+                    app.getTile(e);                      
                     app.eraseTile(e);
-                    app.getTile(e);
                     app.drawTool();   
                     app.clearMap(e);
                     app.buildMap(e);

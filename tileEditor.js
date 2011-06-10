@@ -195,21 +195,28 @@ var tinyMapEditor = (function() {
             },
             drawChar : function() {
                 map.fillStyle = 'purple';
-                map.fillRect(player.x, player.y, player.width, player.height);            
+                map.fillRect(player.x, player.y, player.width, player.height);
                 
                 player.x += player.dx * player.vel;
-                player.y += player.dy * player.grav;
+                player.y += player.dy * player.grav;                            
             },
             checkCollision : function() {
                 var row = (player.y / tileSize | 0),
                     col = (player.x / tileSize | 0),
                     keys = demo.keys;
-                    
-                if (player.y < numTiles * tileSize && row < 9) {
-                    if (typeof alpha[row][col] === 'object') {               
-                        player.y = (row + 1) * tileSize - player.height - (tileSize - alpha[row][col][player.x % tileSize]);
+
+                if (row < numTiles) {
+                    if (row === numTiles - 1 && typeof alpha[row][col] != 'object') {
+                        if (!alpha[row][col] && !alpha[row][col + 1]) {
+                            player.y = numTiles * tileSize - player.height;
+                        } else {
+                            player.vel = 0;
+                            player.y = numTiles * tileSize - player.height;
+                        }
+                    } else if (typeof alpha[row][col] === 'object') {
+                        player.y = (row + 1) * tileSize - player.height - (tileSize - alpha[row][col][player.x % tileSize] + 1);
                     } else if (typeof alpha[row + 1][col] === 'object') {
-                        player.y = (row + 1) * tileSize - player.height - (tileSize - alpha[row + 1][col][player.x % tileSize]);
+                        player.y = (row + 2) * tileSize - player.height - (tileSize - alpha[row + 1][col][player.x % tileSize] + 1);
                     } else if (alpha[row + 1][col] === 1) {
                         player.y = (row + 1) * tileSize - player.height;                      
                     } else if (alpha[row + 1][col] === 0 && alpha[row + 1][col + 1] === 1 && player.x > (col + 1) * tileSize - player.width) {
@@ -230,16 +237,17 @@ var tinyMapEditor = (function() {
                     player.dx = 1;
                     if (alpha[row][col + 1] === 1) {
                         if (player.x >= (col + 1) * tileSize - player.width) {
-                            player.vel = 0; 
+                            player.vel = 0;
                         } else {
                             player.vel = 3;
                         }
                     } else {
-                        player.vel = 3;                            
+                        player.vel = 3;
                     }             
                 } else {
                     player.vel = 0;
-                }
+                }           
+                
             },
             drawMap : function() {
                 var i, j;
@@ -307,9 +315,9 @@ var tinyMapEditor = (function() {
             },
             update : function() {
                 map.canvas.width = map.canvas.width;
-                demo.drawMap();                     
-                demo.drawChar();
-                demo.checkCollision();                
+                demo.drawMap();                                
+                demo.checkCollision();              
+                demo.drawChar();                                                       
             },
             destroy : function() {
                 clearInterval(draw);

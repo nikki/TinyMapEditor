@@ -22,7 +22,7 @@ var tinyMapEditor = (function() {
                         col = e.layerY / tileSize | 0;
 
                     if (e.target.id === 'palette') srcTile = { row : row, col : col };
-                    return { row : row, col : col };                     
+                    return { row : row, col : col };                    
                 }
             },
             setTile : function(e) {
@@ -55,8 +55,8 @@ var tinyMapEditor = (function() {
 
                 app.drawTool = function() {
                     rect.width = tileSize;
-                    srcTile ? ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();        
-                }          
+                    srcTile ? ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();       
+                };          
             },
             eraseTile : function(e) {
                 var destTile;
@@ -92,7 +92,7 @@ var tinyMapEditor = (function() {
                         alpha[x] = [];
                         
                         for (y = 0; y < numTiles; y++) { // tiles down
-                            pixels = map.getImageData(y * tileSize, x * tileSize, tileSize, tileSize),
+                            pixels = map.getImageData(y * tileSize, x * tileSize, tileSize, tileSize);
                             len = pixels.data.length;
                             
                             tiles[x][y] = pixels; // store ALL tile data
@@ -308,7 +308,7 @@ var tinyMapEditor = (function() {
                 }, false);        
             },
             init : function() {
-                player = new demo.createChar;            
+                player = new demo.createChar();            
                 draw = setInterval(function() {
                     demo.update();
                 }, 25);
@@ -324,7 +324,7 @@ var tinyMapEditor = (function() {
                 player = draw = null;
                 alpha = [];
             }
-        }
+        };
 
     app.init();
     demo.bindEvents();    

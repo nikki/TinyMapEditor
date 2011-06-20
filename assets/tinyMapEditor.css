@@ -1,0 +1,46 @@
+@charset 'utf-8';
+
+/**************************************************
+
+    project:  tinyMapEditor
+    author:   Nicola Hibbert
+    url:      http://nicolahibbert.com
+
+/**************************************** Layout */
+body, header, menu, section, canvas, ul, li, div, h1, h2, p { margin: 0; padding: 0 }
+body { font: 12px/16px Helvetica, Verdana, 'san-serif'; min-width: 570px }
+
+/*************************************** Header */
+header { text-align: center; padding: 15px 250px 15px 0; background: #eee; border-bottom: 1px solid #999; }
+header h1 { font-size: 16px; margin-bottom: 5px }
+header h2 { font-size: 14px; font-weight: normal; margin-bottom: 3px }
+
+/*************************************** Editor */
+section { margin: 80px auto; width: 320px; padding-right: 250px }
+canvas { cursor: pointer; position: relative }
+#tileEditor { background: url('bg.png') left top repeat }
+
+/*************************************** Tools  */
+menu { position: absolute; right: 0; top: 0; margin: 0; width: 250px; height: 100%; border-left: 1px solid #999; border-right: 1px solid #999; background: #eee; z-index: 10 }
+menu ul { list-style-type: none; text-align: center }
+menu li { padding-bottom: 10px }
+menu p { margin-bottom: 10px }
+menu > ul > li > label { display: block; padding: 5px 0; margin-bottom: 10px; border-top: 1px solid white; border-bottom: 1px solid #bbb;
+    background: #eeeeee; background: -moz-linear-gradient(top, #eeeeee 0%, #cccccc 100%); background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eeeeee), color-stop(100%,#cccccc));
+    background: -webkit-linear-gradient(top, #eeeeee 0%,#cccccc 100%); background: -o-linear-gradient(top, #eeeeee 0%,#cccccc 100%); background: -ms-linear-gradient(top, #eeeeee 0%,#cccccc 100%);
+    background: linear-gradient(top, #eeeeee 0%,#cccccc 100%) }
+/*div { background: white; margin: 5px; border: 1px solid #bbb }*/
+input[type=text] { width: 30px }
+
+#options p label { display: inline-block; width: 80px; text-align: left }
+#options p span { display: inline-block; width: 20px; padding-left: 5px; text-align: left }
+
+#tiles canvas { margin-bottom: 10px }
+#tiles input { display: inline-block }
+
+#layers li { text-align: left }
+#layers li p { margin: 5px; padding: 5px; border: 1px solid #bbb }
+
+/*************************************** Output */
+output { display: block; width: 400px; margin: 0 auto; padding-right: 250px; text-align: center; z-index: 1 }
+textarea { width: 400px; height: 200px; margin: 0; font-family: monospace }

@@ -1,0 +1,29 @@
+var fs = require('fs'),
+    jsp = require('uglify-js').parser,
+    pro = require('uglify-js').uglify,
+    files = ['main.js', 'app.js', 'demo.js'];
+
+desc('Concatentate, modularise and compress scripts');
+file('default', files, function() {
+    var output = '',
+        module,
+        ast;
+        
+    module = files.shift();
+    module = fs.readFileSync(module).toString().split('/* module */');
+
+    output = module[0];
+
+    files.map(function(val, index) {
+        output += fs.readFileSync(val) + '\n\n';
+    });
+    
+    output += module[1];
+    
+    ast = jsp.parse(output);
+    ast = pro.ast_mangle(ast);
+    ast = pro.ast_squeeze(ast);
+    
+    fs.writeFileSync('../tileEditor.js', output); 
+    fs.writeFileSync('../tileEditor.min.js', pro.gen_code(ast)); 
+});

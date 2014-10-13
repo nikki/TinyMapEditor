@@ -16,7 +16,7 @@ header h1 { font-size: 16px; margin-bottom: 5px }
 header h2 { font-size: 14px; font-weight: normal; margin-bottom: 3px }
 
 /*************************************** Editor */
-section { margin: 80px auto; width: 320px; padding-right: 250px }
+section { margin: 80px auto; text-align: center; padding-right: 250px }
 canvas { cursor: pointer; position: relative }
 #tileEditor { background: url('bg.png') left top repeat }
 
@@ -42,5 +42,5 @@ input[type=text] { width: 30px }
 #layers li p { margin: 5px; padding: 5px; border: 1px solid #bbb }
 
 /*************************************** Output */
-output { display: block; width: 400px; margin: 0 auto; padding-right: 250px; text-align: center; z-index: 1 }
+output { display: block; margin: 0 auto; padding-right: 250px; text-align: center; z-index: 1 }
 textarea { width: 400px; height: 200px; margin: 0; font-family: monospace }

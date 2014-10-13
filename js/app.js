@@ -8,6 +8,7 @@
                 return { row : row, col : col };
             }
         },
+
         setTile : function(e) {
             var destTile;
 
@@ -17,6 +18,7 @@
                 map.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
             }
         },
+
         drawTool : function() {
             var rect = doc.createElement('canvas'),
                 ctx = rect.getContext('2d'),
@@ -41,6 +43,7 @@
                 srcTile ? ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();
             };
         },
+
         eraseTile : function(e) {
             var destTile;
             if (!draw) {
@@ -52,6 +55,7 @@
                 }
             }
         },
+
         drawMap : function() {
             var i, j;
 
@@ -66,6 +70,7 @@
                 }
             }
         },
+
         clearMap : function(e) {
             if (e.target.id === 'clear') {
                 map.clearRect(0, 0, map.canvas.width, map.canvas.height);
@@ -73,6 +78,7 @@
                 build.disabled = false;
             }
         },
+
         buildMap : function(e) {
             if (e.target.id === 'build') {
                 var obj = {},
@@ -83,11 +89,11 @@
                 tiles = []; // graphical tiles (not currently needed, can be used to create standard tile map)
                 alpha = []; // collision map
 
-                for (x = 0; x < width; x++) { // tiles across
+                for (x = 0; x < height; x++) { // tiles across
                     tiles[x] = [];
                     alpha[x] = [];
 
-                    for (y = 0; y < height; y++) { // tiles down
+                    for (y = 0; y < width; y++) { // tiles down
                         pixels = map.getImageData(y * tileSize, x * tileSize, tileSize, tileSize);
                         len = pixels.data.length;
 
@@ -102,9 +108,9 @@
                         }
 
                         if (alpha[x][y].indexOf(0) === -1) { // solid tile
-                            alpha[x][y] = 1;
-                        } else if (alpha[x][y].indexOf(255) === -1) { // transparent tile
                             alpha[x][y] = 0;
+                        } else if (alpha[x][y].indexOf(255) === -1) { // transparent tile
+                            alpha[x][y] = 1;
                         } else { // partial alpha, build pixel map
                             alpha[x][y] = this.sortPartial(alpha[x][y]);
                             tiles[x][y] = pixels; // (temporarily) used for drawing map
@@ -122,6 +128,7 @@
                 this.drawMap();
             }
         },
+
         sortPartial : function(arr) {
             var len = arr.length,
                 temp = [],
@@ -138,11 +145,18 @@
             }
             return temp;
         },
+
         outputJSON : function() {
             doc.getElementsByTagName('textarea')[0].value = JSON.stringify(alpha);
         },
+
         bindEvents : function() {
             var _this = this;
+
+
+            /**
+             * Window events
+             */
 
             win.addEventListener('click', function(e) {
                 _this.setTile(e);
@@ -153,22 +167,45 @@
                 _this.buildMap(e);
             }, false);
 
+
+            /**
+             * Image load event
+             */
+
             sprite.addEventListener('load', function() {
-                map.canvas.width = width * tileSize;
-                map.canvas.height = height * tileSize;
                 pal.canvas.width = this.width;
                 pal.canvas.height = this.height;
                 pal.drawImage(this, 0, 0);
             }, false);
+
+
+            /**
+             * Input change events
+             */
+
+            document.getElementById('width').addEventListener('change', function() {
+                width = +this.value;
+                _this.destroy();
+                _this.init();
+            }, false);
+
+            document.getElementById('height').addEventListener('change', function() {
+                height = +this.value;
+                _this.destroy();
+                _this.init();
+            }, false);
         },
+
         init : function() {
             sprite.src = 'assets/tilemap_32a.png';
+            map.canvas.width = width * tileSize;
+            map.canvas.height = height * tileSize;
             this.bindEvents();
             this.drawTool();
         },
+
         destroy : function() {
             clearInterval(draw);
-            player = draw = null;
             alpha = [];
         }
     };

@@ -75,12 +75,12 @@ var tinyMapEditor = (function() {
         },
 
         drawMap : function() {
-            var i, j;
+            var i, j, invert = document.getElementById('invert').checked ? 0 : 1;
 
             map.fillStyle = 'black';
-            for (i = 0; i < width; i++) {
+            for (i = 0; i < height; i++) {
                 for (j = 0; j < width; j++) {
-                    if (alpha[i][j] === 1) {
+                    if (alpha[i][j] === invert) {
                         map.fillRect(j * tileSize, i * tileSize, tileSize, tileSize);
                     } else if (typeof alpha[i][j] === 'object') {
                         map.putImageData(tiles[i][j], j * tileSize, i * tileSize); // temp fix to colour collision layer black
@@ -126,18 +126,12 @@ var tinyMapEditor = (function() {
                         }
 
                         if (alpha[x][y].indexOf(0) === -1) { // solid tile
-                            alpha[x][y] = 0;
-                        } else if (alpha[x][y].indexOf(255) === -1) { // transparent tile
                             alpha[x][y] = 1;
+                        } else if (alpha[x][y].indexOf(255) === -1) { // transparent tile
+                            alpha[x][y] = 0;
                         } else { // partial alpha, build pixel map
                             alpha[x][y] = this.sortPartial(alpha[x][y]);
                             tiles[x][y] = pixels; // (temporarily) used for drawing map
-                            /*
-                            alpha[x][y] = {
-                                imageData : pixels, // (temporarily) used for drawing map
-                                alphaData : this.sortPartial(alpha[x][y])
-                            }
-                            */
                         }
                     }
                 }
@@ -165,7 +159,23 @@ var tinyMapEditor = (function() {
         },
 
         outputJSON : function() {
-            doc.getElementsByTagName('textarea')[0].value = JSON.stringify(alpha);
+            var output = '',
+                invert = document.getElementById('invert').checked;
+
+            if (invert) {
+                alpha.forEach(function(arr) {
+                    arr.forEach(function(item, index) {
+                        // using bitwise not to flip values
+                        if (typeof item === 'number') arr[index] = Math.abs(~-item);
+                    });
+                });
+            }
+
+            // output = (output.split('],'));
+            // output = output.concat('],');
+
+            output = JSON.stringify(alpha);
+            doc.getElementsByTagName('textarea')[0].value = output;
         },
 
         bindEvents : function() {
@@ -218,7 +228,6 @@ var tinyMapEditor = (function() {
             sprite.src = 'assets/tilemap_32a.png';
             map.canvas.width = width * tileSize;
             map.canvas.height = height * tileSize;
-            this.bindEvents();
             this.drawTool();
         },
 
@@ -230,6 +239,7 @@ var tinyMapEditor = (function() {
 
 
 
+    app.bindEvents();
     app.init();
     return app;
 

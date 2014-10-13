@@ -1,15 +1,3 @@
-a JavaScript tile map editor for 2d platform games.  Very much a work in progress :)
+A super-basic JavaScript map editor for HTML5 games.  Useful for creating a lightweight JSON collision layer (think 2d platformer collisions, grid masks in puzzle games, brick position in Breakout, etc).
 
-Currently only outputs maps for the collision layer.
-
-Todo:
-  Click and hold to paint tiles 
-  Graphical tile layers above collision layer    
-  Settings object for setting heights/widths of tiles, maps, etc.
-  Upload sprite sheets dialog
-  Output maps to JSON
-  Pan map on right click
-  Split demo into its own module
-
-Read more about the development here: http://nicolahibbert.com/curved-sloped-tiles-javascript-games
-View a working demo here: http://nicolahibbert.com/demo/javascript-tile-map-editor/
+Read more here: http://kodogames.com/curved-sloped-tiles-javascript-games

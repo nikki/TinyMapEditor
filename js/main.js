@@ -18,6 +18,7 @@ var tinyMapEditor = (function() {
 
 /* module */
 
+    app.bindEvents();
     app.init();
     return app;
 

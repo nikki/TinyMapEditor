@@ -153,9 +153,6 @@
                 });
             }
 
-            // output = (output.split('],'));
-            // output = output.concat('],');
-
             output = JSON.stringify(alpha);
             doc.getElementsByTagName('textarea')[0].value = output;
         },

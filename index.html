@@ -6,61 +6,61 @@
     <link rel="stylesheet" href="assets/tinyMapEditor.css">
 </head>
 <body>
-       
+
     <header>
         <h1>tinyMapEditor.js - version 0.1</h1>
         <h2>A 2D tile map editor for JavaScript based games (work in progress).</h2>
-        <p>More about this project &amp; source code here: 
+        <p>More about this project &amp; source code here:
             <a href="http://nicolahibbert.com/curved-sloped-tiles-javascript-games">http://nicolahibbert.com/curved-sloped-tiles-javascript-games</a></p>
     </header>
-    
+
     <section>
-        <canvas id="tileEditor"></canvas>       
+        <canvas id="tileEditor"></canvas>
     </section>
-    
+
     <menu>
         <ul>
             <li id="options">
                 <label>Map Options</label>
-                <p><label>Tile size:</label><input type="text" value="32" maxlength="3" disabled /><span>px</span></p>
-                <p><label>Map width:</label><input type="text" value="10" maxlength="3" disabled /><span>tiles</span></p>
-                <p><label>Map height:</label><input type="text" value="10" maxlength="3" disabled /><span>tiles</span></p>
+                <p><label>Tile size:</label><input type="text" value="32" maxlength="3" /><span>px</span></p>
+                <p><label>Map width:</label><input type="text" value="10" maxlength="3" /><span>tiles</span></p>
+                <p><label>Map height:</label><input type="text" value="10" maxlength="3" /><span>tiles</span></p>
             </li>
             <li id="tiles">
                 <label>Tiles</label>
-                <canvas id="palette"></canvas>               
-                <input type="file" disabled />  
+                <canvas id="palette"></canvas>
+                <input type="file" disabled />
             </li>
             <li id="selected">
-                <label>Selected Tile</label> 
-            </li>            
+                <label>Selected Tile</label>
+            </li>
             <li id="layers">
                 <label>Layers</label>
                 <ul>
                     <li>
                         <p>Collision</p>
                     </li>
-                </ul>                    
+                </ul>
             </li>
             <li id="tools">
                 <label>Tools</label>
                 <p><input id="erase" type="button" value="Tile Eraser" /></p>
-                <p><input id="clear" type="button" value="Clear Canvas" /></p>
                 <p><input id="build" type="button" value="Build Map" /></p>
-                <p><input id="test" type="button" value="Test Map" disabled /></p>                
-            </li>                        
+                <p><input id="clear" type="button" value="Clear Canvas" /></p>
+                <!-- <p><input id="test" type="button" value="Test Map" disabled /></p> -->
+            </li>
         </ul>
     </menu>
-    
+
     <output>
-<textarea>
-1. Create tile map. 
-2. ??? 
-3. Profit!
-</textarea>
-    </output>   
+    <textarea>
+    1. Create tile map.
+    2. ???
+    3. Profit!
+    </textarea>
+    </output>
 
     <script src="tileEditor.js"></script>
-    
+
 </body>
 </html>

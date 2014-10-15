@@ -60,12 +60,12 @@
             var i, j, invert = document.getElementById('invert').checked ? 0 : 1;
 
             map.fillStyle = 'black';
-            for (i = 0; i < height; i++) {
-                for (j = 0; j < width; j++) {
+            for (i = 0; i < width; i++) {
+                for (j = 0; j < height; j++) {
                     if (alpha[i][j] === invert) {
-                        map.fillRect(j * tileSize, i * tileSize, tileSize, tileSize);
+                        map.fillRect(i * tileSize, j * tileSize, tileSize, tileSize);
                     } else if (typeof alpha[i][j] === 'object') {
-                        map.putImageData(tiles[i][j], j * tileSize, i * tileSize); // temp fix to colour collision layer black
+                        // map.putImageData(tiles[i][j], i * tileSize, j * tileSize); // temp fix to colour collision layer black
                     }
                 }
             }
@@ -89,12 +89,12 @@
                 tiles = []; // graphical tiles (not currently needed, can be used to create standard tile map)
                 alpha = []; // collision map
 
-                for (x = 0; x < height; x++) { // tiles across
+                for (x = 0; x < width; x++) { // tiles across
                     tiles[x] = [];
                     alpha[x] = [];
 
-                    for (y = 0; y < width; y++) { // tiles down
-                        pixels = map.getImageData(y * tileSize, x * tileSize, tileSize, tileSize);
+                    for (y = 0; y < height; y++) { // tiles down
+                        pixels = map.getImageData(x * tileSize, y * tileSize, tileSize, tileSize);
                         len = pixels.data.length;
 
                         tiles[x][y] = pixels; // store ALL tile data
@@ -152,6 +152,9 @@
                     });
                 });
             }
+
+            // output = (output.split('],'));
+            // output = output.concat('],');
 
             output = JSON.stringify(alpha);
             doc.getElementsByTagName('textarea')[0].value = output;

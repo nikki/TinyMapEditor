@@ -141,6 +141,28 @@ var tinyMapEditor = (function() {
             }
         },
 
+        uploadMap: function(e) {
+            if (e.target.id === 'upload-map') {
+                var textarea = document.getElementById('uploadArea');
+                var inner = JSON.parse(textarea.value);
+                var w = document.getElementById('width');
+                var h = document.getElementById('height');
+
+                w.value = width = inner.length;
+                h.value = height = inner[0].length;
+
+                this.destroy();
+                this.init();
+
+                alpha = inner;
+
+                this.outputJSON();
+                this.drawMap();
+
+                textarea.value = '';
+            }
+        },
+
         sortPartial : function(arr) {
             var len = arr.length,
                 temp = [],
@@ -175,7 +197,7 @@ var tinyMapEditor = (function() {
             // output = output.concat('],');
 
             output = JSON.stringify(alpha);
-            doc.getElementsByTagName('textarea')[0].value = output;
+            doc.getElementsByTagName('textarea')[1].value = output;
         },
 
         bindEvents : function() {
@@ -193,6 +215,7 @@ var tinyMapEditor = (function() {
                 _this.drawTool();
                 _this.clearMap(e);
                 _this.buildMap(e);
+                _this.uploadMap(e);
             }, false);
 
 

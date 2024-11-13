@@ -2,7 +2,8 @@ var tinyMapEditor = (function() {
     var win = window,
         doc = document,
         pal = doc.getElementById('palette').getContext('2d'),
-        map = doc.getElementById('tileEditor').getContext('2d'),
+		tileEditor = doc.getElementById('tileEditor'),
+        map = tileEditor.getContext('2d'),
         width = 10,
         height = 10,
         tileSize = 32,
@@ -195,6 +196,14 @@ var tinyMapEditor = (function() {
                 _this.clearMap(e);
                 _this.buildMap(e);
             }, false);
+			
+			/***
+			 * Tile editor events
+			 */
+			tileEditor.addEventListener('mousemove', e => {
+				if (e.buttons != 1) return;
+				_this.setTile(e);
+			});
 			
             /**
              * Image load event

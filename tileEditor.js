@@ -204,6 +204,7 @@ var tinyMapEditor = (function() {
 			const handleTileEditorMouseEvent = e => {
 				if (e.buttons != 1) return;
 				_this.setTile(e);
+                _this.eraseTile(e);
 			};
 			tileEditor.addEventListener('mousedown', handleTileEditorMouseEvent);
 			tileEditor.addEventListener('mousemove', handleTileEditorMouseEvent);

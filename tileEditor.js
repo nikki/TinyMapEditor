@@ -235,6 +235,12 @@ var tinyMapEditor = (function() {
                 _this.destroy();
                 _this.init();
             }, false);
+	
+            document.getElementById('tileSize').addEventListener('change', function() {
+                tileSize = +this.value || 1;
+                _this.destroy();
+                _this.init();
+            }, false);
 			
 			/**
 			 * Tileset file event

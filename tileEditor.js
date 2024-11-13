@@ -14,7 +14,8 @@ var tinyMapEditor = (function() {
         player,
         draw,
         build = doc.getElementById('build'),
-        test = doc.getElementById('test');
+        test = doc.getElementById('test'),
+		tileInput = doc.getElementById('tileInput');
 
     var app = {
         getTile : function(e) {
@@ -194,8 +195,7 @@ var tinyMapEditor = (function() {
                 _this.clearMap(e);
                 _this.buildMap(e);
             }, false);
-
-
+			
             /**
              * Image load event
              */
@@ -222,6 +222,21 @@ var tinyMapEditor = (function() {
                 _this.destroy();
                 _this.init();
             }, false);
+			
+			/**
+			 * Tileset file event
+			 */
+			tileInput.addEventListener('change', () => {
+				if (!tileInput.files.length) return;
+				
+				console.log("File selected: ", tileInput.files[0]);
+						 
+				const fr = new FileReader();
+				fr.onload = function () {
+					sprite.src = fr.result;
+				}
+				fr.readAsDataURL(tileInput.files[0]);
+			 });
         },
 
         init : function() {

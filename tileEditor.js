@@ -225,13 +225,19 @@ var tinyMapEditor = (function() {
              */
 
             document.getElementById('width').addEventListener('change', function() {
-                width = +this.value;
+                width = +this.value || 1;
                 _this.destroy();
                 _this.init();
             }, false);
 
             document.getElementById('height').addEventListener('change', function() {
-                height = +this.value;
+                height = +this.value || 1;
+                _this.destroy();
+                _this.init();
+            }, false);
+	
+            document.getElementById('tileSize').addEventListener('change', function() {
+                tileSize = +this.value || 1;
                 _this.destroy();
                 _this.init();
             }, false);

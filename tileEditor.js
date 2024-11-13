@@ -200,10 +200,13 @@ var tinyMapEditor = (function() {
 			/***
 			 * Tile editor events
 			 */
-			tileEditor.addEventListener('mousemove', e => {
+			 
+			const handleTileEditorMouseEvent = e => {
 				if (e.buttons != 1) return;
 				_this.setTile(e);
-			});
+			};
+			tileEditor.addEventListener('mousedown', handleTileEditorMouseEvent);
+			tileEditor.addEventListener('mousemove', handleTileEditorMouseEvent);
 			
             /**
              * Image load event

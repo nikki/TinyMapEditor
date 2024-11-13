@@ -16,7 +16,11 @@ var tinyMapEditor = (function() {
         draw,
         build = doc.getElementById('build'),
         test = doc.getElementById('test'),
-		tileInput = doc.getElementById('tileInput');
+		tileInput = doc.getElementById('tileInput'),
+		
+		widthInput = document.getElementById('width'),
+        heightInput = document.getElementById('height'),
+        tileSizeInput = document.getElementById('tileSize');
 
     var app = {
         getTile : function(e) {
@@ -224,19 +228,19 @@ var tinyMapEditor = (function() {
              * Input change events
              */
 
-            document.getElementById('width').addEventListener('change', function() {
+            widthInput.addEventListener('change', function() {
                 width = +this.value || 1;
                 _this.destroy();
                 _this.init();
             }, false);
 
-            document.getElementById('height').addEventListener('change', function() {
+            heightInput.addEventListener('change', function() {
                 height = +this.value || 1;
                 _this.destroy();
                 _this.init();
             }, false);
 	
-            document.getElementById('tileSize').addEventListener('change', function() {
+            tileSizeInput.addEventListener('change', function() {
                 tileSize = +this.value || 1;
                 _this.destroy();
                 _this.init();

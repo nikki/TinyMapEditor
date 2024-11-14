@@ -235,22 +235,14 @@ var tinyMapEditor = (function() {
             /**
              * Input change events
              */
+			 
+			[widthInput, heightInput, tileSizeInput].forEach(input => {
+				input.addEventListener('change', function() {
+					_this.destroy();
+					_this.init();
+				}, false);				
+			});
 
-            widthInput.addEventListener('change', function() {
-                _this.destroy();
-                _this.init();
-            }, false);
-
-            heightInput.addEventListener('change', function() {
-                _this.destroy();
-                _this.init();
-            }, false);
-	
-            tileSizeInput.addEventListener('change', function() {
-                _this.destroy();
-                _this.init();
-            }, false);
-			
 			/**
 			 * Tileset file event
 			 */

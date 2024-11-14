@@ -183,6 +183,14 @@ var tinyMapEditor = (function() {
             output = JSON.stringify(alpha);
             doc.getElementsByTagName('textarea')[0].value = output;
         },
+		
+		updateSizeVariables : function() {
+			const inputToNumber = el => +el.value || 1;
+			
+			width = inputToNumber(widthInput);
+			height = inputToNumber(heightInput);
+			tileSize = inputToNumber(tileSizeInput);
+		},
 
         bindEvents : function() {
             var _this = this;
@@ -229,19 +237,16 @@ var tinyMapEditor = (function() {
              */
 
             widthInput.addEventListener('change', function() {
-                width = +this.value || 1;
                 _this.destroy();
                 _this.init();
             }, false);
 
             heightInput.addEventListener('change', function() {
-                height = +this.value || 1;
                 _this.destroy();
                 _this.init();
             }, false);
 	
             tileSizeInput.addEventListener('change', function() {
-                tileSize = +this.value || 1;
                 _this.destroy();
                 _this.init();
             }, false);
@@ -263,6 +268,8 @@ var tinyMapEditor = (function() {
         },
 
         init : function() {
+			this.updateSizeVariables();
+			
             sprite.src = 'assets/tilemap_32a.png';
             map.canvas.width = width * tileSize;
             map.canvas.height = height * tileSize;

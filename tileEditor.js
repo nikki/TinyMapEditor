@@ -16,7 +16,11 @@ var tinyMapEditor = (function() {
         draw,
         build = doc.getElementById('build'),
         test = doc.getElementById('test'),
-		tileInput = doc.getElementById('tileInput');
+		tileInput = doc.getElementById('tileInput'),
+		
+		widthInput = document.getElementById('width'),
+        heightInput = document.getElementById('height'),
+        tileSizeInput = document.getElementById('tileSize');
 
     var app = {
         getTile : function(e) {
@@ -179,6 +183,14 @@ var tinyMapEditor = (function() {
             output = JSON.stringify(alpha);
             doc.getElementsByTagName('textarea')[0].value = output;
         },
+		
+		updateSizeVariables : function() {
+			const inputToNumber = el => +el.value || 1;
+			
+			width = inputToNumber(widthInput);
+			height = inputToNumber(heightInput);
+			tileSize = inputToNumber(tileSizeInput);
+		},
 
         bindEvents : function() {
             var _this = this;
@@ -223,25 +235,14 @@ var tinyMapEditor = (function() {
             /**
              * Input change events
              */
+			 
+			[widthInput, heightInput, tileSizeInput].forEach(input => {
+				input.addEventListener('change', function() {
+					_this.destroy();
+					_this.init();
+				}, false);				
+			});
 
-            document.getElementById('width').addEventListener('change', function() {
-                width = +this.value || 1;
-                _this.destroy();
-                _this.init();
-            }, false);
-
-            document.getElementById('height').addEventListener('change', function() {
-                height = +this.value || 1;
-                _this.destroy();
-                _this.init();
-            }, false);
-	
-            document.getElementById('tileSize').addEventListener('change', function() {
-                tileSize = +this.value || 1;
-                _this.destroy();
-                _this.init();
-            }, false);
-			
 			/**
 			 * Tileset file event
 			 */
@@ -259,6 +260,8 @@ var tinyMapEditor = (function() {
         },
 
         init : function() {
+			this.updateSizeVariables();
+			
             sprite.src = 'assets/tilemap_32a.png';
             map.canvas.width = width * tileSize;
             map.canvas.height = height * tileSize;

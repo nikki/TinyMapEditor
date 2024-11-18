@@ -63,12 +63,8 @@ var tinyMapEditor = (function() {
 			selectedTile.style.zoom = tileZoom;
 
             selectedTile.width = selectedTile.height = tileSize;
-            eraser();
 
-            this.drawTool = function() {
-                selectedTile.width = tileSize;
-                srcTile ? ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();
-            };
+            srcTile ? ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();
         },
 
         eraseTile : function(e) {

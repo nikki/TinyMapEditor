@@ -28,8 +28,8 @@ var tinyMapEditor = (function() {
     var app = {
         getTile : function(e) {
             if (e.target.nodeName === 'CANVAS') {
-                var row = e.layerX / tileSize | 0,
-                    col = e.layerY / tileSize | 0;
+                var row = e.layerX / tileSize / tileZoom | 0,
+                    col = e.layerY / tileSize / tileZoom | 0;
 
                 if (e.target.id === 'palette') srcTile = { row : row, col : col };
                 return { row : row, col : col };
@@ -230,6 +230,7 @@ var tinyMapEditor = (function() {
             sprite.addEventListener('load', function() {
                 pal.canvas.width = this.width;
                 pal.canvas.height = this.height;
+				pal.canvas.style.zoom = tileZoom;
                 pal.drawImage(this, 0, 0);
             }, false);
 
@@ -267,6 +268,8 @@ var tinyMapEditor = (function() {
             sprite.src = 'assets/tilemap_32a.png';
             map.canvas.width = width * tileSize;
             map.canvas.height = height * tileSize;
+			map.canvas.style.zoom = tileZoom;
+			
             this.drawTool();
         },
 

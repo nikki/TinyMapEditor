@@ -59,6 +59,8 @@ var tinyMapEditor = (function() {
                     ctx.lineTo(0, tileSize);
                     ctx.stroke();
                 };
+				
+			rect.style.zoom = tileZoom;
 
             rect.width = rect.height = tileSize;
             doc.getElementById('selected').appendChild(rect);

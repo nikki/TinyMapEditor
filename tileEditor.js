@@ -4,6 +4,7 @@ var tinyMapEditor = (function() {
         pal = doc.getElementById('palette').getContext('2d'),
 		tileEditor = doc.getElementById('tileEditor'),
         map = tileEditor.getContext('2d'),
+		selectedTile = doc.getElementById('selectedTile'),
         width = 10,
         height = 10,
         tileSize = 32,
@@ -46,8 +47,7 @@ var tinyMapEditor = (function() {
         },
 
         drawTool : function() {
-            var rect = doc.createElement('canvas'),
-                ctx = rect.getContext('2d'),
+            var ctx = selectedTile.getContext('2d'),
                 eraser = function() {
                     ctx.fillStyle = 'red';
                     ctx.fillRect(0, 0, tileSize, tileSize);
@@ -60,14 +60,13 @@ var tinyMapEditor = (function() {
                     ctx.stroke();
                 };
 				
-			rect.style.zoom = tileZoom;
+			selectedTile.style.zoom = tileZoom;
 
-            rect.width = rect.height = tileSize;
-            doc.getElementById('selected').appendChild(rect);
+            selectedTile.width = selectedTile.height = tileSize;
             eraser();
 
             this.drawTool = function() {
-                rect.width = tileSize;
+                selectedTile.width = tileSize;
                 srcTile ? ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();
             };
         },

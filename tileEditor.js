@@ -4,9 +4,11 @@ var tinyMapEditor = (function() {
         pal = doc.getElementById('palette').getContext('2d'),
 		tileEditor = doc.getElementById('tileEditor'),
         map = tileEditor.getContext('2d'),
+		selectedTile = doc.getElementById('selectedTile'),
         width = 10,
         height = 10,
         tileSize = 32,
+        tileZoom = 1,
         srcTile = 0,
         sprite = new Image(),
         tiles, // used for demo, not *really* needed atm
@@ -20,7 +22,8 @@ var tinyMapEditor = (function() {
 		
 		widthInput = document.getElementById('width'),
         heightInput = document.getElementById('height'),
-        tileSizeInput = document.getElementById('tileSize');
+        tileSizeInput = document.getElementById('tileSize'),
+		tileZoomInput = document.getElementById('tileZoom');
 
     var app = {
         getTile : function(e) {
@@ -44,8 +47,7 @@ var tinyMapEditor = (function() {
         },
 
         drawTool : function() {
-            var rect = doc.createElement('canvas'),
-                ctx = rect.getContext('2d'),
+            var ctx = selectedTile.getContext('2d'),
                 eraser = function() {
                     ctx.fillStyle = 'red';
                     ctx.fillRect(0, 0, tileSize, tileSize);
@@ -57,15 +59,12 @@ var tinyMapEditor = (function() {
                     ctx.lineTo(0, tileSize);
                     ctx.stroke();
                 };
+				
+			selectedTile.style.zoom = tileZoom;
 
-            rect.width = rect.height = tileSize;
-            doc.getElementById('selected').appendChild(rect);
-            eraser();
+            selectedTile.width = selectedTile.height = tileSize;
 
-            this.drawTool = function() {
-                rect.width = tileSize;
-                srcTile ? ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();
-            };
+            srcTile ? ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();
         },
 
         eraseTile : function(e) {
@@ -190,6 +189,9 @@ var tinyMapEditor = (function() {
 			width = inputToNumber(widthInput);
 			height = inputToNumber(heightInput);
 			tileSize = inputToNumber(tileSizeInput);
+			tileZoom = inputToNumber(tileZoomInput);
+			
+			console.log('Zoom', tileZoom)
 		},
 
         bindEvents : function() {
@@ -236,7 +238,7 @@ var tinyMapEditor = (function() {
              * Input change events
              */
 			 
-			[widthInput, heightInput, tileSizeInput].forEach(input => {
+			[widthInput, heightInput, tileSizeInput, tileZoomInput].forEach(input => {
 				input.addEventListener('change', function() {
 					_this.destroy();
 					_this.init();

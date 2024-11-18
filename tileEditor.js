@@ -230,6 +230,7 @@ var tinyMapEditor = (function() {
             sprite.addEventListener('load', function() {
                 pal.canvas.width = this.width;
                 pal.canvas.height = this.height;
+				pal.canvas.style.zoom = tileZoom;
                 pal.drawImage(this, 0, 0);
             }, false);
 

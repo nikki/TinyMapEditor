@@ -7,6 +7,7 @@ var tinyMapEditor = (function() {
         width = 10,
         height = 10,
         tileSize = 32,
+        tileZoom = 1,
         srcTile = 0,
         sprite = new Image(),
         tiles, // used for demo, not *really* needed atm
@@ -20,7 +21,8 @@ var tinyMapEditor = (function() {
 		
 		widthInput = document.getElementById('width'),
         heightInput = document.getElementById('height'),
-        tileSizeInput = document.getElementById('tileSize');
+        tileSizeInput = document.getElementById('tileSize'),
+		tileZoomInput = document.getElementById('tileZoom');
 
     var app = {
         getTile : function(e) {
@@ -190,6 +192,9 @@ var tinyMapEditor = (function() {
 			width = inputToNumber(widthInput);
 			height = inputToNumber(heightInput);
 			tileSize = inputToNumber(tileSizeInput);
+			tileZoom = inputToNumber(tileZoomInput);
+			
+			console.log('Zoom', tileZoom)
 		},
 
         bindEvents : function() {
@@ -236,7 +241,7 @@ var tinyMapEditor = (function() {
              * Input change events
              */
 			 
-			[widthInput, heightInput, tileSizeInput].forEach(input => {
+			[widthInput, heightInput, tileSizeInput, tileZoomInput].forEach(input => {
 				input.addEventListener('change', function() {
 					_this.destroy();
 					_this.init();

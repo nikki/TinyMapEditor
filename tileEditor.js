@@ -24,6 +24,11 @@ var tinyMapEditor = (function() {
         heightInput = document.getElementById('height'),
         tileSizeInput = document.getElementById('tileSize'),
 		tileZoomInput = document.getElementById('tileZoom');
+		
+	const STORAGE_PREFIX = 'TinyMapEditor.';
+	const storage = {
+		put: (k, v) => localStorage[STORAGE_PREFIX + k] = JSON.stringify(v)
+	};
 
     var app = {
         getTile : function(e) {
@@ -252,13 +257,17 @@ var tinyMapEditor = (function() {
 			tileInput.addEventListener('change', () => {
 				if (!tileInput.files.length) return;
 				
-				console.log("File selected: ", tileInput.files[0]);
+				const file = tileInput.files[0];
 						 
 				const fr = new FileReader();
 				fr.onload = function () {
 					sprite.src = fr.result;
+					storage.put('tileSet', {
+						name: file.name,
+						src: sprite.src
+					});
 				}
-				fr.readAsDataURL(tileInput.files[0]);
+				fr.readAsDataURL(file);
 			 });
         },
 

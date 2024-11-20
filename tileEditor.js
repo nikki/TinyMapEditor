@@ -199,8 +199,13 @@ var tinyMapEditor = (function() {
 			height = inputToNumber(heightInput);
 			tileSize = inputToNumber(tileSizeInput);
 			tileZoom = inputToNumber(tileZoomInput);
-			
-			console.log('Zoom', tileZoom)
+
+			storage.put('mapSize', {
+				mapWidth: width,
+				mapHeight: height,
+				tileSize,
+				tileZoom
+			});
 		},
 
         bindEvents : function() {

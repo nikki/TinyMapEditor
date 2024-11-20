@@ -199,8 +199,23 @@ var tinyMapEditor = (function() {
 			height = inputToNumber(heightInput);
 			tileSize = inputToNumber(tileSizeInput);
 			tileZoom = inputToNumber(tileZoomInput);
+
+			storage.put('mapSize', {
+				mapWidth: width,
+				mapHeight: height,
+				tileSize,
+				tileZoom
+			});
+		},
+
+		loadSizeVariables : function() {
+			const storedSize = storage.get('mapSize');
+			if (!storedSize) return;
 			
-			console.log('Zoom', tileZoom)
+			widthInput.value = storedSize.mapWidth;
+			heightInput.value = storedSize.mapHeight;
+			tileSizeInput.value = storedSize.tileSize;
+			tileZoomInput.value = storedSize.tileZoom;
 		},
 
         bindEvents : function() {
@@ -277,6 +292,7 @@ var tinyMapEditor = (function() {
         },
 
         init : function() {
+			this.loadSizeVariables();
 			this.updateSizeVariables();
 			
 			const storedTileSet = storage.get('tileSet');

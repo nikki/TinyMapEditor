@@ -208,6 +208,16 @@ var tinyMapEditor = (function() {
 			});
 		},
 
+		loadSizeVariables : function() {
+			const storedSize = storage.get('mapSize');
+			if (!storedSize) return;
+			
+			widthInput.value = storedSize.mapWidth;
+			heightInput.value = storedSize.mapHeight;
+			tileSizeInput.value = storedSize.tileSize;
+			tileZoomInput.value = storedSize.tileZoom;
+		},
+
         bindEvents : function() {
             var _this = this;
 
@@ -282,6 +292,7 @@ var tinyMapEditor = (function() {
         },
 
         init : function() {
+			this.loadSizeVariables();
 			this.updateSizeVariables();
 			
 			const storedTileSet = storage.get('tileSet');

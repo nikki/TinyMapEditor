@@ -79,13 +79,9 @@ var tinyMapEditor = (function() {
 
         eraseTile : function(e) {
             var destTile;
-            if (!draw) {
-                if (e.target.id === 'erase' && srcTile) {
-                    srcTile = 0;
-                } else if (e.target.id === 'tileEditor' && !srcTile) {
-                    destTile = this.getTile(e);
-                    map.clearRect(destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
-                }
+            if (e.target.id === 'tileEditor' && !srcTile) {
+				destTile = this.getTile(e);
+				map.clearRect(destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
             }
         },
 
@@ -225,7 +221,6 @@ var tinyMapEditor = (function() {
 
             pal.canvas.addEventListener('click', function(e) {
                 _this.getTile(e);
-                _this.eraseTile(e);
                 _this.drawTool();
             }, false);
 			
@@ -286,7 +281,10 @@ var tinyMapEditor = (function() {
 			/**
 			 * Map buttons
 			 */
-			getById('erase').addEventListener('click', e => _this.eraseTile(e));
+			getById('erase').addEventListener('click', e => {
+				srcTile = 0;
+				_this.drawTool();
+			});
 			getById('build').addEventListener('click', e => _this.buildMap(e));
 			getById('clear').addEventListener('click', e => _this.clearMap(e));
         },

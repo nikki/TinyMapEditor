@@ -1,10 +1,11 @@
 var tinyMapEditor = (function() {
     var win = window,
         doc = document,
-        pal = doc.getElementById('palette').getContext('2d'),
-		tileEditor = doc.getElementById('tileEditor'),
+		getById = id =>  document.getElementById(id),
+        pal = getById('palette').getContext('2d'),
+		tileEditor = getById('tileEditor'),
         map = tileEditor.getContext('2d'),
-		selectedTile = doc.getElementById('selectedTile'),
+		selectedTile = getById('selectedTile'),
         width = 10,
         height = 10,
         tileSize = 32,
@@ -16,14 +17,14 @@ var tinyMapEditor = (function() {
 
         player,
         draw,
-        build = doc.getElementById('build'),
-        test = doc.getElementById('test'),
-		tileInput = doc.getElementById('tileInput'),
+        build = getById('build'),
+        test = getById('test'),
+		tileInput = getById('tileInput'),
 		
-		widthInput = document.getElementById('width'),
-        heightInput = document.getElementById('height'),
-        tileSizeInput = document.getElementById('tileSize'),
-		tileZoomInput = document.getElementById('tileZoom');
+		widthInput = getById('width'),
+        heightInput = getById('height'),
+        tileSizeInput = getById('tileSize'),
+		tileZoomInput = getById('tileZoom');
 		
 	const STORAGE_PREFIX = 'TinyMapEditor.';
 	const storage = {
@@ -89,7 +90,7 @@ var tinyMapEditor = (function() {
         },
 
         drawMap : function() {
-            var i, j, invert = document.getElementById('invert').checked ? 0 : 1;
+            var i, j, invert = getById('invert').checked ? 0 : 1;
 
             map.fillStyle = 'black';
             for (i = 0; i < width; i++) {
@@ -104,55 +105,51 @@ var tinyMapEditor = (function() {
         },
 
         clearMap : function(e) {
-            if (e.target.id === 'clear') {
-                map.clearRect(0, 0, map.canvas.width, map.canvas.height);
-                this.destroy();
-                build.disabled = false;
-            }
+			map.clearRect(0, 0, map.canvas.width, map.canvas.height);
+			this.destroy();
+			build.disabled = false;
         },
 
         buildMap : function(e) {
-            if (e.target.id === 'build') {
-                var obj = {},
-                    pixels,
-                    len,
-                    x, y, z;
+			var obj = {},
+				pixels,
+				len,
+				x, y, z;
 
-                tiles = []; // graphical tiles (not currently needed, can be used to create standard tile map)
-                alpha = []; // collision map
+			tiles = []; // graphical tiles (not currently needed, can be used to create standard tile map)
+			alpha = []; // collision map
 
-                for (x = 0; x < width; x++) { // tiles across
-                    tiles[x] = [];
-                    alpha[x] = [];
+			for (x = 0; x < width; x++) { // tiles across
+				tiles[x] = [];
+				alpha[x] = [];
 
-                    for (y = 0; y < height; y++) { // tiles down
-                        pixels = map.getImageData(x * tileSize, y * tileSize, tileSize, tileSize);
-                        len = pixels.data.length;
+				for (y = 0; y < height; y++) { // tiles down
+					pixels = map.getImageData(x * tileSize, y * tileSize, tileSize, tileSize);
+					len = pixels.data.length;
 
-                        tiles[x][y] = pixels; // store ALL tile data
-                        alpha[x][y] = [];
+					tiles[x][y] = pixels; // store ALL tile data
+					alpha[x][y] = [];
 
-                        for (z = 0; z < len; z += 4) {
-                            pixels.data[z] = 0;
-                            pixels.data[z + 1] = 0;
-                            pixels.data[z + 2] = 0;
-                            alpha[x][y][z / 4] = pixels.data[z + 3]; // store alpha data only
-                        }
+					for (z = 0; z < len; z += 4) {
+						pixels.data[z] = 0;
+						pixels.data[z + 1] = 0;
+						pixels.data[z + 2] = 0;
+						alpha[x][y][z / 4] = pixels.data[z + 3]; // store alpha data only
+					}
 
-                        if (alpha[x][y].indexOf(0) === -1) { // solid tile
-                            alpha[x][y] = 1;
-                        } else if (alpha[x][y].indexOf(255) === -1) { // transparent tile
-                            alpha[x][y] = 0;
-                        } else { // partial alpha, build pixel map
-                            alpha[x][y] = this.sortPartial(alpha[x][y]);
-                            tiles[x][y] = pixels; // (temporarily) used for drawing map
-                        }
-                    }
-                }
+					if (alpha[x][y].indexOf(0) === -1) { // solid tile
+						alpha[x][y] = 1;
+					} else if (alpha[x][y].indexOf(255) === -1) { // transparent tile
+						alpha[x][y] = 0;
+					} else { // partial alpha, build pixel map
+						alpha[x][y] = this.sortPartial(alpha[x][y]);
+						tiles[x][y] = pixels; // (temporarily) used for drawing map
+					}
+				}
+			}
 
-                this.outputJSON();
-                this.drawMap();
-            }
+			this.outputJSON();
+			this.drawMap();
         },
 
         sortPartial : function(arr) {
@@ -174,7 +171,7 @@ var tinyMapEditor = (function() {
 
         outputJSON : function() {
             var output = '',
-                invert = document.getElementById('invert').checked;
+                invert = getById('invert').checked;
 
             if (invert) {
                 alpha.forEach(function(arr) {
@@ -223,16 +220,13 @@ var tinyMapEditor = (function() {
 
 
             /**
-             * Window events
+             * Tileset events
              */
 
-            win.addEventListener('click', function(e) {
-                _this.setTile(e);
+            pal.canvas.addEventListener('click', function(e) {
                 _this.getTile(e);
                 _this.eraseTile(e);
                 _this.drawTool();
-                _this.clearMap(e);
-                _this.buildMap(e);
             }, false);
 			
 			/***
@@ -289,6 +283,12 @@ var tinyMapEditor = (function() {
 				fr.readAsDataURL(file);
 			 });
 			 
+			/**
+			 * Map buttons
+			 */
+			getById('erase').addEventListener('click', e => _this.eraseTile(e));
+			getById('build').addEventListener('click', e => _this.buildMap(e));
+			getById('clear').addEventListener('click', e => _this.clearMap(e));
         },
 
         init : function() {

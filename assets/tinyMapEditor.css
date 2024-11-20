@@ -36,7 +36,7 @@ input[type=text] { width: 30px }
 #options p label { display: inline-block; width: 80px; text-align: left }
 #options p span { display: inline-block; width: 20px; padding-left: 5px; text-align: left }
 
-#tiles canvas { margin-bottom: 10px }
+#tiles .scrollable { margin-bottom: 10px }
 #tiles input { display: inline-block }
 
 #layers li { text-align: left }
@@ -45,3 +45,5 @@ input[type=text] { width: 30px }
 /*************************************** Output */
 output { display: block; margin: 0 auto; padding-right: 250px; text-align: center; z-index: 1 }
 textarea { width: 400px; height: 200px; margin: 0; font-family: monospace }
+
+.scrollable { overflow: auto }

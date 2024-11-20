@@ -8,7 +8,7 @@
 <body>
 
     <header>
-        <h1>tinyMapEditor.js - version 0.5.0</h1>
+        <h1>tinyMapEditor.js - version 0.6.0</h1>
         <h2>A 2D tile map editor for JavaScript based games (work in progress).</h2>
         <p>More about this project &amp; source code here:
             <a href="http://nicolahibbert.com/curved-sloped-tiles-javascript-games">http://nicolahibbert.com/curved-sloped-tiles-javascript-games</a></p>
@@ -29,7 +29,9 @@
             </li>
             <li id="tiles">
                 <label>Tiles</label>
-                <canvas id="palette" class="zoomable"></canvas>
+				<div class="scrollable">
+					<canvas id="palette" class="zoomable"></canvas>
+				</div>
                 <input id="tileInput" type="file" accept="image/*" />
             </li>
             <li id="selected">

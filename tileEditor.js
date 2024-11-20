@@ -104,55 +104,51 @@ var tinyMapEditor = (function() {
         },
 
         clearMap : function(e) {
-            if (e.target.id === 'clear') {
-                map.clearRect(0, 0, map.canvas.width, map.canvas.height);
-                this.destroy();
-                build.disabled = false;
-            }
+			map.clearRect(0, 0, map.canvas.width, map.canvas.height);
+			this.destroy();
+			build.disabled = false;
         },
 
         buildMap : function(e) {
-            if (e.target.id === 'build') {
-                var obj = {},
-                    pixels,
-                    len,
-                    x, y, z;
+			var obj = {},
+				pixels,
+				len,
+				x, y, z;
 
-                tiles = []; // graphical tiles (not currently needed, can be used to create standard tile map)
-                alpha = []; // collision map
+			tiles = []; // graphical tiles (not currently needed, can be used to create standard tile map)
+			alpha = []; // collision map
 
-                for (x = 0; x < width; x++) { // tiles across
-                    tiles[x] = [];
-                    alpha[x] = [];
+			for (x = 0; x < width; x++) { // tiles across
+				tiles[x] = [];
+				alpha[x] = [];
 
-                    for (y = 0; y < height; y++) { // tiles down
-                        pixels = map.getImageData(x * tileSize, y * tileSize, tileSize, tileSize);
-                        len = pixels.data.length;
+				for (y = 0; y < height; y++) { // tiles down
+					pixels = map.getImageData(x * tileSize, y * tileSize, tileSize, tileSize);
+					len = pixels.data.length;
 
-                        tiles[x][y] = pixels; // store ALL tile data
-                        alpha[x][y] = [];
+					tiles[x][y] = pixels; // store ALL tile data
+					alpha[x][y] = [];
 
-                        for (z = 0; z < len; z += 4) {
-                            pixels.data[z] = 0;
-                            pixels.data[z + 1] = 0;
-                            pixels.data[z + 2] = 0;
-                            alpha[x][y][z / 4] = pixels.data[z + 3]; // store alpha data only
-                        }
+					for (z = 0; z < len; z += 4) {
+						pixels.data[z] = 0;
+						pixels.data[z + 1] = 0;
+						pixels.data[z + 2] = 0;
+						alpha[x][y][z / 4] = pixels.data[z + 3]; // store alpha data only
+					}
 
-                        if (alpha[x][y].indexOf(0) === -1) { // solid tile
-                            alpha[x][y] = 1;
-                        } else if (alpha[x][y].indexOf(255) === -1) { // transparent tile
-                            alpha[x][y] = 0;
-                        } else { // partial alpha, build pixel map
-                            alpha[x][y] = this.sortPartial(alpha[x][y]);
-                            tiles[x][y] = pixels; // (temporarily) used for drawing map
-                        }
-                    }
-                }
+					if (alpha[x][y].indexOf(0) === -1) { // solid tile
+						alpha[x][y] = 1;
+					} else if (alpha[x][y].indexOf(255) === -1) { // transparent tile
+						alpha[x][y] = 0;
+					} else { // partial alpha, build pixel map
+						alpha[x][y] = this.sortPartial(alpha[x][y]);
+						tiles[x][y] = pixels; // (temporarily) used for drawing map
+					}
+				}
+			}
 
-                this.outputJSON();
-                this.drawMap();
-            }
+			this.outputJSON();
+			this.drawMap();
         },
 
         sortPartial : function(arr) {
@@ -231,8 +227,6 @@ var tinyMapEditor = (function() {
                 _this.getTile(e);
                 _this.eraseTile(e);
                 _this.drawTool();
-                _this.clearMap(e);
-                _this.buildMap(e);
             }, false);
 			
 			/***
@@ -289,6 +283,11 @@ var tinyMapEditor = (function() {
 				fr.readAsDataURL(file);
 			 });
 			 
+			/**
+			 * Map buttons
+			 */
+			doc.getElementById('build').addEventListener('click', e => _this.buildMap(e));
+			doc.getElementById('clear').addEventListener('click', e => _this.clearMap(e));
         },
 
         init : function() {

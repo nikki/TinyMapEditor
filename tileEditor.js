@@ -27,6 +27,10 @@ var tinyMapEditor = (function() {
 		
 	const STORAGE_PREFIX = 'TinyMapEditor.';
 	const storage = {
+		get: k => {
+			const json = localStorage[STORAGE_PREFIX + k];
+			return json && JSON.parse(json);
+		},
 		put: (k, v) => localStorage[STORAGE_PREFIX + k] = JSON.stringify(v)
 	};
 
@@ -269,12 +273,15 @@ var tinyMapEditor = (function() {
 				}
 				fr.readAsDataURL(file);
 			 });
+			 
         },
 
         init : function() {
 			this.updateSizeVariables();
 			
-            sprite.src = 'assets/tilemap_32a.png';
+			const storedTileSet = storage.get('tileSet');
+			sprite.src = storedTileSet && storedTileSet.src || 'assets/tilemap_32a.png';
+			
             map.canvas.width = width * tileSize;
             map.canvas.height = height * tileSize;
 			map.canvas.style.zoom = tileZoom;

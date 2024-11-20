@@ -220,11 +220,10 @@ var tinyMapEditor = (function() {
 
 
             /**
-             * Window events
+             * Tileset events
              */
 
-            win.addEventListener('click', function(e) {
-                _this.setTile(e);
+            pal.canvas.addEventListener('click', function(e) {
                 _this.getTile(e);
                 _this.eraseTile(e);
                 _this.drawTool();
@@ -287,6 +286,7 @@ var tinyMapEditor = (function() {
 			/**
 			 * Map buttons
 			 */
+			getById('erase').addEventListener('click', e => _this.eraseTile(e));
 			getById('build').addEventListener('click', e => _this.buildMap(e));
 			getById('clear').addEventListener('click', e => _this.clearMap(e));
         },

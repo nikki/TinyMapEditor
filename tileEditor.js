@@ -36,9 +36,14 @@ var tinyMapEditor = (function() {
 	};
 
     var app = {
+		
+		toCharCoord : function(coordInPixels) {
+			return coordInPixels / tileSize / tileZoom | 0;
+		},
+		
         getTile : function(e) {
-			var row = e.layerX / tileSize / tileZoom | 0,
-				col = e.layerY / tileSize / tileZoom | 0;
+			var row = this.toCharCoord(e.layerX),
+				col = this.toCharCoord(e.layerY);
 
 			return { row : row, col : col };
         },

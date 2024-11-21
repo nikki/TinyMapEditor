@@ -50,16 +50,18 @@ var tinyMapEditor = (function() {
         },
 
         setTile : function(e) {
-            if (!srcTile) return;
-			
 			const destTile = this.getTile(e);
 			map.clearRect(destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
 			map.drawImage(sprite, srcTile.col * tileSize, srcTile.row * tileSize, tileSize, tileSize, destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
 			
-			tiles = tiles || [];
-			if (!tiles[destTile.row]) tiles[destTile.row] = [];
-			tiles[destTile.row][destTile.col] = srcTile.tileIndex;
+			this.setTileIndex(destTile.row, destTile.col, srcTile.tileIndex);
         },
+		
+		setTileIndex : function(row, col, tileIndex) {
+			tiles = tiles || [];
+			if (!tiles[row]) tiles[row] = [];
+			tiles[row][col] = srcTile.tileIndex;
+		},
 
         drawTool : function() {
             var ctx = selectedTile.getContext('2d'),
@@ -83,11 +85,7 @@ var tinyMapEditor = (function() {
 			selectedTileIndex.innerHTML = srcTile ? srcTile.tileIndex : 'None';
         },
 
-        eraseTile : function(e) {
-			if (srcTile) {
-				return;
-			}
-			
+        eraseTile : function(e) {		
 			const destTile = this.getTile(e);
 			map.clearRect(destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
         },
@@ -193,8 +191,11 @@ var tinyMapEditor = (function() {
 			 
 			const handleTileEditorMouseEvent = e => {
 				if (e.buttons != 1) return;
-				_this.setTile(e);
-                _this.eraseTile(e);
+				if (srcTile) {
+					_this.setTile(e);
+				} else {
+					_this.eraseTile(e);
+				}
 			};
 			tileEditor.addEventListener('mousedown', handleTileEditorMouseEvent);
 			tileEditor.addEventListener('mousemove', handleTileEditorMouseEvent);

@@ -262,6 +262,7 @@ var tinyMapEditor = (function() {
 			 
 			[widthInput, heightInput, tileSizeInput, tileZoomInput].forEach(input => {
 				input.addEventListener('change', function() {
+					_this.updateSizeVariables();
 					_this.destroy();
 					_this.init();
 				}, false);				

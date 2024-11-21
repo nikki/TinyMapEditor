@@ -42,10 +42,10 @@ var tinyMapEditor = (function() {
 		},
 		
         getTile : function(e) {
-			var row = this.toCharCoord(e.layerX),
-				col = this.toCharCoord(e.layerY);
+			var col = this.toCharCoord(e.layerX),
+				row = this.toCharCoord(e.layerY);
 
-			return { row : row, col : col };
+			return { col, row };
         },
 
         setTile : function(e) {
@@ -54,8 +54,8 @@ var tinyMapEditor = (function() {
 			}
 			
 			const destTile = this.getTile(e);
-			map.clearRect(destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
-			map.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
+			map.clearRect(destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
+			map.drawImage(sprite, srcTile.col * tileSize, srcTile.row * tileSize, tileSize, tileSize, destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
         },
 
         drawTool : function() {
@@ -76,7 +76,7 @@ var tinyMapEditor = (function() {
 
             selectedTile.width = selectedTile.height = tileSize;
 
-            srcTile ? ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();
+            srcTile ? ctx.drawImage(sprite, srcTile.col * tileSize, srcTile.row * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();
         },
 
         eraseTile : function(e) {
@@ -85,7 +85,7 @@ var tinyMapEditor = (function() {
 			}
 			
 			const destTile = this.getTile(e);
-			map.clearRect(destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
+			map.clearRect(destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
         },
 
         drawMap : function() {
@@ -225,7 +225,7 @@ var tinyMapEditor = (function() {
             pal.canvas.addEventListener('click', function(e) {
 				srcTile = _this.getTile(e);                
 				if (srcTile) {
-					srcTile.tileIndex = srcTile.row + srcTile.col * pal.canvas.width / tileSize + 1;
+					srcTile.tileIndex = srcTile.col + srcTile.row * pal.canvas.width / tileSize + 1;
 				}
 				console.log('srcTile', srcTile);
 				

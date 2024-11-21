@@ -50,13 +50,15 @@ var tinyMapEditor = (function() {
         },
 
         setTile : function(e) {
-            if (!srcTile) {
-				return;
-			}
+            if (!srcTile) return;
 			
 			const destTile = this.getTile(e);
 			map.clearRect(destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
 			map.drawImage(sprite, srcTile.col * tileSize, srcTile.row * tileSize, tileSize, tileSize, destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
+			
+			tiles = tiles || [];
+			if (!tiles[destTile.row]) tiles[destTile.row] = [];
+			tiles[destTile.row][destTile.col] = srcTile.tileIndex;
         },
 
         drawTool : function() {
@@ -91,18 +93,6 @@ var tinyMapEditor = (function() {
         },
 
         drawMap : function() {
-            var i, j, invert = getById('invert').checked ? 0 : 1;
-
-            map.fillStyle = 'black';
-            for (i = 0; i < width; i++) {
-                for (j = 0; j < height; j++) {
-                    if (alpha[i][j] === invert) {
-                        map.fillRect(i * tileSize, j * tileSize, tileSize, tileSize);
-                    } else if (typeof alpha[i][j] === 'object') {
-                        // map.putImageData(tiles[i][j], i * tileSize, j * tileSize); // temp fix to colour collision layer black
-                    }
-                }
-            }
         },
 
         clearMap : function(e) {
@@ -112,43 +102,6 @@ var tinyMapEditor = (function() {
         },
 
         buildMap : function(e) {
-			var obj = {},
-				pixels,
-				len,
-				x, y, z;
-
-			tiles = []; // graphical tiles (not currently needed, can be used to create standard tile map)
-			alpha = []; // collision map
-
-			for (x = 0; x < width; x++) { // tiles across
-				tiles[x] = [];
-				alpha[x] = [];
-
-				for (y = 0; y < height; y++) { // tiles down
-					pixels = map.getImageData(x * tileSize, y * tileSize, tileSize, tileSize);
-					len = pixels.data.length;
-
-					tiles[x][y] = pixels; // store ALL tile data
-					alpha[x][y] = [];
-
-					for (z = 0; z < len; z += 4) {
-						pixels.data[z] = 0;
-						pixels.data[z + 1] = 0;
-						pixels.data[z + 2] = 0;
-						alpha[x][y][z / 4] = pixels.data[z + 3]; // store alpha data only
-					}
-
-					if (alpha[x][y].indexOf(0) === -1) { // solid tile
-						alpha[x][y] = 1;
-					} else if (alpha[x][y].indexOf(255) === -1) { // transparent tile
-						alpha[x][y] = 0;
-					} else { // partial alpha, build pixel map
-						alpha[x][y] = this.sortPartial(alpha[x][y]);
-						tiles[x][y] = pixels; // (temporarily) used for drawing map
-					}
-				}
-			}
-
 			this.outputJSON();
 			this.drawMap();
         },
@@ -171,22 +124,21 @@ var tinyMapEditor = (function() {
         },
 
         outputJSON : function() {
-            var output = '',
-                invert = getById('invert').checked;
+			tiles = tiles || [];
+			
+			const cleanedUpTiles = [];
+			for (let row = 0; row < height; row++) {
+				const sourceRow = tiles[row] || [];
+				const cleanedUpRow = [];
+				cleanedUpTiles[row] = cleanedUpRow;
 
-            if (invert) {
-                alpha.forEach(function(arr) {
-                    arr.forEach(function(item, index) {
-                        // using bitwise not to flip values
-                        if (typeof item === 'number') arr[index] = Math.abs(~-item);
-                    });
-                });
-            }
+				for (let col = 0; col < width; col++) {
+					cleanedUpRow[col] = sourceRow[col] || 0;
+				}
 
-            // output = (output.split('],'));
-            // output = output.concat('],');
-
-            output = JSON.stringify(alpha);
+			}
+			
+            const output = JSON.stringify(cleanedUpTiles);
             doc.getElementsByTagName('textarea')[0].value = output;
         },
 		

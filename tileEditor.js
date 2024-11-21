@@ -36,24 +36,26 @@ var tinyMapEditor = (function() {
 	};
 
     var app = {
+		
+		toCharCoord : function(coordInPixels) {
+			return coordInPixels / tileSize / tileZoom | 0;
+		},
+		
         getTile : function(e) {
-            if (e.target.nodeName === 'CANVAS') {
-                var row = e.layerX / tileSize / tileZoom | 0,
-                    col = e.layerY / tileSize / tileZoom | 0;
+			var col = this.toCharCoord(e.layerX),
+				row = this.toCharCoord(e.layerY);
 
-                if (e.target.id === 'palette') srcTile = { row : row, col : col };
-                return { row : row, col : col };
-            }
+			return { col, row };
         },
 
         setTile : function(e) {
-            var destTile;
-
-            if (e.target.id === 'tileEditor' && srcTile && !draw) {
-                destTile = this.getTile(e);
-                map.clearRect(destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
-                map.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
-            }
+            if (!srcTile) {
+				return;
+			}
+			
+			const destTile = this.getTile(e);
+			map.clearRect(destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
+			map.drawImage(sprite, srcTile.col * tileSize, srcTile.row * tileSize, tileSize, tileSize, destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
         },
 
         drawTool : function() {
@@ -74,19 +76,16 @@ var tinyMapEditor = (function() {
 
             selectedTile.width = selectedTile.height = tileSize;
 
-            srcTile ? ctx.drawImage(sprite, srcTile.row * tileSize, srcTile.col * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();
+            srcTile ? ctx.drawImage(sprite, srcTile.col * tileSize, srcTile.row * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();
         },
 
         eraseTile : function(e) {
-            var destTile;
-            if (!draw) {
-                if (e.target.id === 'erase' && srcTile) {
-                    srcTile = 0;
-                } else if (e.target.id === 'tileEditor' && !srcTile) {
-                    destTile = this.getTile(e);
-                    map.clearRect(destTile.row * tileSize, destTile.col * tileSize, tileSize, tileSize);
-                }
-            }
+			if (srcTile) {
+				return;
+			}
+			
+			const destTile = this.getTile(e);
+			map.clearRect(destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
         },
 
         drawMap : function() {
@@ -224,8 +223,12 @@ var tinyMapEditor = (function() {
              */
 
             pal.canvas.addEventListener('click', function(e) {
-                _this.getTile(e);
-                _this.eraseTile(e);
+				srcTile = _this.getTile(e);                
+				if (srcTile) {
+					srcTile.tileIndex = srcTile.col + srcTile.row * pal.canvas.width / tileSize + 1;
+				}
+				console.log('srcTile', srcTile);
+				
                 _this.drawTool();
             }, false);
 			
@@ -259,6 +262,7 @@ var tinyMapEditor = (function() {
 			 
 			[widthInput, heightInput, tileSizeInput, tileZoomInput].forEach(input => {
 				input.addEventListener('change', function() {
+					_this.updateSizeVariables();
 					_this.destroy();
 					_this.init();
 				}, false);				
@@ -286,7 +290,10 @@ var tinyMapEditor = (function() {
 			/**
 			 * Map buttons
 			 */
-			getById('erase').addEventListener('click', e => _this.eraseTile(e));
+			getById('erase').addEventListener('click', e => {
+				srcTile = 0;
+				_this.drawTool();
+			});
 			getById('build').addEventListener('click', e => _this.buildMap(e));
 			getById('clear').addEventListener('click', e => _this.clearMap(e));
         },

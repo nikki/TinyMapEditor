@@ -122,23 +122,24 @@ var tinyMapEditor = (function() {
             }
             return temp;
         },
+		
+		prepareMapStructure : function() {
+			tiles = tiles || [];
+			tiles.length = height;
+			for (let row = 0; row < height; row++) {
+				const tilesRow = tiles[row] || [];
+				tilesRow.length = width;
+				for (let col = 0; col < width; col++) {
+					tilesRow[col] = tilesRow[col] || 0;
+				}
+				tiles[row] = tilesRow;
+			}
+		},
 
         outputJSON : function() {
-			tiles = tiles || [];
-			
-			const cleanedUpTiles = [];
-			for (let row = 0; row < height; row++) {
-				const sourceRow = tiles[row] || [];
-				const cleanedUpRow = [];
-				cleanedUpTiles[row] = cleanedUpRow;
-
-				for (let col = 0; col < width; col++) {
-					cleanedUpRow[col] = sourceRow[col] || 0;
-				}
-
-			}
-			
-            const output = JSON.stringify(cleanedUpTiles);
+			this.prepareMapStructure();
+					
+            const output = JSON.stringify(tiles);
             doc.getElementsByTagName('textarea')[0].value = output;
         },
 		

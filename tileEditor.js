@@ -55,6 +55,8 @@ var tinyMapEditor = (function() {
 			map.drawImage(sprite, srcTile.col * tileSize, srcTile.row * tileSize, tileSize, tileSize, destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
 			
 			this.setTileIndex(destTile.row, destTile.col, srcTile.tileIndex);
+			
+			this.saveMap();
         },
 		
 		setTileIndex : function(row, col, tileIndex) {
@@ -142,6 +144,13 @@ var tinyMapEditor = (function() {
             doc.getElementsByTagName('textarea')[0].value = output;
         },
 		
+        saveMap : function() {
+			this.prepareMapStructure();
+			storage.put('map', {
+				tileIndexes: tiles
+			});
+        },
+
 		updateSizeVariables : function() {
 			const inputToNumber = el => +el.value || 1;
 			

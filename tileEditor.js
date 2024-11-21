@@ -88,6 +88,7 @@ var tinyMapEditor = (function() {
         eraseTile : function(e) {		
 			const destTile = this.getTile(e);
 			map.clearRect(destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
+			this.setTileIndex(destTile.row, destTile.col, 0);
         },
 
         drawMap : function() {

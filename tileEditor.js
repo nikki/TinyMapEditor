@@ -6,6 +6,7 @@ var tinyMapEditor = (function() {
 		tileEditor = getById('tileEditor'),
         map = tileEditor.getContext('2d'),
 		selectedTile = getById('selectedTile'),
+		selectedTileIndex = getById('selectedTileIndex'),
         width = 10,
         height = 10,
         tileSize = 32,
@@ -77,6 +78,7 @@ var tinyMapEditor = (function() {
             selectedTile.width = selectedTile.height = tileSize;
 
             srcTile ? ctx.drawImage(sprite, srcTile.col * tileSize, srcTile.row * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();
+			selectedTileIndex.innerHTML = srcTile ? srcTile.tileIndex : 'None';
         },
 
         eraseTile : function(e) {

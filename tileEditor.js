@@ -224,6 +224,11 @@ var tinyMapEditor = (function() {
 
             pal.canvas.addEventListener('click', function(e) {
 				srcTile = _this.getTile(e);                
+				if (srcTile) {
+					srcTile.tileIndex = srcTile.row + srcTile.col * pal.canvas.width / tileSize + 1;
+				}
+				console.log('srcTile', srcTile);
+				
                 _this.drawTool();
             }, false);
 			

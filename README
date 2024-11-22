@@ -1,3 +1,16 @@
-A super-basic JavaScript map editor for HTML5 games.  Useful for creating a lightweight JSON collision layer (think 2d platformer collisions, grid masks in puzzle games, brick position in Breakout, etc).
+A super-basic JavaScript map editor for HTML5 games.
 
-Read more here: http://nicolahibbert.com/curved-sloped-tiles-javascript-games
+Based on Nikki's TinyMapEditor: https://github.com/nikki/TinyMapEditor
+
+Improvements over the original:
+
+- Can customize the tile size;
+- Can adjust zoom level;
+- Can upload a custom tileset;
+- Persists the map on the browser's local storage, so that it will be left the way the user left, when returning to the app.
+
+TODO:
+
+- Export the entire project to JSON;
+- Implement multiple maps;
+- Implement support for custom metadata.

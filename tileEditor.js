@@ -106,6 +106,7 @@ var tinyMapEditor = (function() {
 
         clearMap : function(e) {
 			map.clearRect(0, 0, map.canvas.width, map.canvas.height);
+			tiles = null;
 			this.destroy();
 			build.disabled = false;
         },

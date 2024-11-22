@@ -49,6 +49,16 @@ var tinyMapEditor = (function() {
 			return { col, row };
         },
 
+        getSrcTileCoordByIndex : function(tileIndex) {
+			if (!tileIndex) return null;
+
+			const tilesPerRow = Math.ceil(pal.canvas.width / tileSize);
+			const col = (tileIndex -1) % tilesPerRow;
+			const row = Math.floor((tileIndex -1) / tilesPerRow);
+
+			return { col, row, tileIndex };
+        },
+
         setTile : function(e) {
 			const destTile = this.getTile(e);
 			
@@ -110,6 +120,33 @@ var tinyMapEditor = (function() {
 			this.destroy();
 			build.disabled = false;
         },
+		
+        loadMap : function() {
+			const map = storage.get('map');
+			if (!map) return;
+			
+			tiles = map.tileIndexes;
+			this.prepareMapStructure();
+
+			for (let row = 0; row < height; row++) {
+				for (let col = 0; col < width; col++) {
+					const tileIndex = tiles[row][col];
+					const localSrcTile = this.getSrcTileCoordByIndex(tileIndex);
+					if (localSrcTile) {
+						this.setTileByCoord(col, row, localSrcTile);
+					} else {
+						this.eraseTileByCoord(col, row);
+					}
+				}
+			}
+		},
+		
+        saveMap : function() {
+			this.prepareMapStructure();
+			storage.put('map', {
+				tileIndexes: tiles
+			});
+        },
 
         buildMap : function(e) {
 			this.outputJSON();
@@ -151,13 +188,6 @@ var tinyMapEditor = (function() {
 					
             const output = JSON.stringify(tiles);
             doc.getElementsByTagName('textarea')[0].value = output;
-        },
-		
-        saveMap : function() {
-			this.prepareMapStructure();
-			storage.put('map', {
-				tileIndexes: tiles
-			});
         },
 
 		updateSizeVariables : function() {
@@ -227,6 +257,8 @@ var tinyMapEditor = (function() {
                 pal.canvas.height = this.height;
 				pal.canvas.style.zoom = tileZoom;
                 pal.drawImage(this, 0, 0);
+				
+				_this.loadMap();
             }, false);
 
 

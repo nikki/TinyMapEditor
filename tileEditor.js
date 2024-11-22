@@ -186,7 +186,7 @@ var tinyMapEditor = (function() {
         outputJSON : function() {
 			this.prepareMapStructure();
 					
-            const output = JSON.stringify(tiles);
+            const output = neatJSON(tiles);
             doc.getElementsByTagName('textarea')[0].value = output;
         },
 

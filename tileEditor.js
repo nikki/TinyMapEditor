@@ -185,9 +185,33 @@ var tinyMapEditor = (function() {
 
         outputJSON : function() {
 			this.prepareMapStructure();
+			
+			const project = {
+				tool: {
+					name: 'TinyMapEditor',
+					version: '0.7.0',
+					format: '0.1.0'
+				},
+				options: {
+					tileZoom,
+					tileSize,
+					mapWidth: width,
+					mapHeight: height
+				},
+				maps: [
+					{
+						tileIndexes: tiles
+					}
+				],
+				tileSet: {
+					src: sprite.src
+				}
+			};
 					
-            const output = JSON.stringify(tiles);
-            doc.getElementsByTagName('textarea')[0].value = output;
+            const output = neatJSON(project);
+			
+			var blob = new Blob([output], { type: 'application/json' });
+			saveAs(blob, "TinyMapEditor.project.json");
         },
 
 		updateSizeVariables : function() {

@@ -209,6 +209,9 @@ var tinyMapEditor = (function() {
 			};
 					
             const output = neatJSON(project);
+			
+			var blob = new Blob([output], { type: 'application/json' });
+			saveAs(blob, "TinyMapEditor.project.json");
             doc.getElementsByTagName('textarea')[0].value = output;
         },
 

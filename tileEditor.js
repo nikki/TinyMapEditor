@@ -6,6 +6,7 @@ var tinyMapEditor = (function() {
 		tileEditor = getById('tileEditor'),
         map = tileEditor.getContext('2d'),
 		selectedTile = getById('selectedTile'),
+		selectedTileIndex = getById('selectedTileIndex'),
         width = 10,
         height = 10,
         tileSize = 32,
@@ -48,15 +49,35 @@ var tinyMapEditor = (function() {
 			return { col, row };
         },
 
-        setTile : function(e) {
-            if (!srcTile) {
-				return;
-			}
-			
-			const destTile = this.getTile(e);
-			map.clearRect(destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
-			map.drawImage(sprite, srcTile.col * tileSize, srcTile.row * tileSize, tileSize, tileSize, destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
+        getSrcTileCoordByIndex : function(tileIndex) {
+			if (!tileIndex) return null;
+
+			const tilesPerRow = Math.ceil(pal.canvas.width / tileSize);
+			const col = (tileIndex -1) % tilesPerRow;
+			const row = Math.floor((tileIndex -1) / tilesPerRow);
+
+			return { col, row, tileIndex };
         },
+
+        setTile : function(e) {
+			const destTile = this.getTile(e);
+			
+			this.setTileByCoord(destTile.col, destTile.row, srcTile);
+			this.setTileIndex(destTile.col, destTile.row, srcTile.tileIndex);
+			
+			this.saveMap();
+        },
+		
+		setTileByCoord : function(destCol, destRow, srcTile) {
+			map.clearRect(destCol * tileSize, destRow * tileSize, tileSize, tileSize);
+			map.drawImage(sprite, srcTile.col * tileSize, srcTile.row * tileSize, tileSize, tileSize, destCol * tileSize, destRow * tileSize, tileSize, tileSize);
+		},
+		
+		setTileIndex : function(col, row, tileIndex) {
+			tiles = tiles || [];
+			if (!tiles[row]) tiles[row] = [];
+			tiles[row][col] = srcTile.tileIndex;
+		},
 
         drawTool : function() {
             var ctx = selectedTile.getContext('2d'),
@@ -77,76 +98,57 @@ var tinyMapEditor = (function() {
             selectedTile.width = selectedTile.height = tileSize;
 
             srcTile ? ctx.drawImage(sprite, srcTile.col * tileSize, srcTile.row * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();
+			selectedTileIndex.innerHTML = srcTile ? srcTile.tileIndex : 'None';
         },
 
-        eraseTile : function(e) {
-			if (srcTile) {
-				return;
-			}
-			
+        eraseTile : function(e) {		
 			const destTile = this.getTile(e);
-			map.clearRect(destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
+			this.eraseTileByCoord(destTile.col, destTile.row);
+			this.setTileIndex(destTile.col, destTile.row, 0);
         },
 
+        eraseTileByCoord : function(col, row) {		
+			map.clearRect(col * tileSize, row * tileSize, tileSize, tileSize);
+		},
+		
         drawMap : function() {
-            var i, j, invert = getById('invert').checked ? 0 : 1;
-
-            map.fillStyle = 'black';
-            for (i = 0; i < width; i++) {
-                for (j = 0; j < height; j++) {
-                    if (alpha[i][j] === invert) {
-                        map.fillRect(i * tileSize, j * tileSize, tileSize, tileSize);
-                    } else if (typeof alpha[i][j] === 'object') {
-                        // map.putImageData(tiles[i][j], i * tileSize, j * tileSize); // temp fix to colour collision layer black
-                    }
-                }
-            }
         },
 
         clearMap : function(e) {
 			map.clearRect(0, 0, map.canvas.width, map.canvas.height);
+			tiles = null;
 			this.destroy();
 			build.disabled = false;
         },
+		
+        loadMap : function() {
+			const map = storage.get('map');
+			if (!map) return;
+			
+			tiles = map.tileIndexes;
+			this.prepareMapStructure();
 
-        buildMap : function(e) {
-			var obj = {},
-				pixels,
-				len,
-				x, y, z;
-
-			tiles = []; // graphical tiles (not currently needed, can be used to create standard tile map)
-			alpha = []; // collision map
-
-			for (x = 0; x < width; x++) { // tiles across
-				tiles[x] = [];
-				alpha[x] = [];
-
-				for (y = 0; y < height; y++) { // tiles down
-					pixels = map.getImageData(x * tileSize, y * tileSize, tileSize, tileSize);
-					len = pixels.data.length;
-
-					tiles[x][y] = pixels; // store ALL tile data
-					alpha[x][y] = [];
-
-					for (z = 0; z < len; z += 4) {
-						pixels.data[z] = 0;
-						pixels.data[z + 1] = 0;
-						pixels.data[z + 2] = 0;
-						alpha[x][y][z / 4] = pixels.data[z + 3]; // store alpha data only
-					}
-
-					if (alpha[x][y].indexOf(0) === -1) { // solid tile
-						alpha[x][y] = 1;
-					} else if (alpha[x][y].indexOf(255) === -1) { // transparent tile
-						alpha[x][y] = 0;
-					} else { // partial alpha, build pixel map
-						alpha[x][y] = this.sortPartial(alpha[x][y]);
-						tiles[x][y] = pixels; // (temporarily) used for drawing map
+			for (let row = 0; row < height; row++) {
+				for (let col = 0; col < width; col++) {
+					const tileIndex = tiles[row][col];
+					const localSrcTile = this.getSrcTileCoordByIndex(tileIndex);
+					if (localSrcTile) {
+						this.setTileByCoord(col, row, localSrcTile);
+					} else {
+						this.eraseTileByCoord(col, row);
 					}
 				}
 			}
+		},
+		
+        saveMap : function() {
+			this.prepareMapStructure();
+			storage.put('map', {
+				tileIndexes: tiles
+			});
+        },
 
+        buildMap : function(e) {
 			this.outputJSON();
 			this.drawMap();
         },
@@ -167,27 +169,27 @@ var tinyMapEditor = (function() {
             }
             return temp;
         },
+		
+		prepareMapStructure : function() {
+			tiles = tiles || [];
+			tiles.length = height;
+			for (let row = 0; row < height; row++) {
+				const tilesRow = tiles[row] || [];
+				tilesRow.length = width;
+				for (let col = 0; col < width; col++) {
+					tilesRow[col] = tilesRow[col] || 0;
+				}
+				tiles[row] = tilesRow;
+			}
+		},
 
         outputJSON : function() {
-            var output = '',
-                invert = getById('invert').checked;
-
-            if (invert) {
-                alpha.forEach(function(arr) {
-                    arr.forEach(function(item, index) {
-                        // using bitwise not to flip values
-                        if (typeof item === 'number') arr[index] = Math.abs(~-item);
-                    });
-                });
-            }
-
-            // output = (output.split('],'));
-            // output = output.concat('],');
-
-            output = JSON.stringify(alpha);
+			this.prepareMapStructure();
+					
+            const output = JSON.stringify(tiles);
             doc.getElementsByTagName('textarea')[0].value = output;
         },
-		
+
 		updateSizeVariables : function() {
 			const inputToNumber = el => +el.value || 1;
 			
@@ -227,7 +229,6 @@ var tinyMapEditor = (function() {
 				if (srcTile) {
 					srcTile.tileIndex = srcTile.col + srcTile.row * pal.canvas.width / tileSize + 1;
 				}
-				console.log('srcTile', srcTile);
 				
                 _this.drawTool();
             }, false);
@@ -238,8 +239,11 @@ var tinyMapEditor = (function() {
 			 
 			const handleTileEditorMouseEvent = e => {
 				if (e.buttons != 1) return;
-				_this.setTile(e);
-                _this.eraseTile(e);
+				if (srcTile) {
+					_this.setTile(e);
+				} else {
+					_this.eraseTile(e);
+				}
 			};
 			tileEditor.addEventListener('mousedown', handleTileEditorMouseEvent);
 			tileEditor.addEventListener('mousemove', handleTileEditorMouseEvent);
@@ -253,6 +257,8 @@ var tinyMapEditor = (function() {
                 pal.canvas.height = this.height;
 				pal.canvas.style.zoom = tileZoom;
                 pal.drawImage(this, 0, 0);
+				
+				_this.loadMap();
             }, false);
 
 

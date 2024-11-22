@@ -51,15 +51,19 @@ var tinyMapEditor = (function() {
 
         setTile : function(e) {
 			const destTile = this.getTile(e);
-			map.clearRect(destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
-			map.drawImage(sprite, srcTile.col * tileSize, srcTile.row * tileSize, tileSize, tileSize, destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
 			
-			this.setTileIndex(destTile.row, destTile.col, srcTile.tileIndex);
+			this.setTileByCoord(destTile.col, destTile.row, srcTile);
+			this.setTileIndex(destTile.col, destTile.row, srcTile.tileIndex);
 			
 			this.saveMap();
         },
 		
-		setTileIndex : function(row, col, tileIndex) {
+		setTileByCoord : function(destCol, destRow, srcTile) {
+			map.clearRect(destCol * tileSize, destRow * tileSize, tileSize, tileSize);
+			map.drawImage(sprite, srcTile.col * tileSize, srcTile.row * tileSize, tileSize, tileSize, destCol * tileSize, destRow * tileSize, tileSize, tileSize);
+		},
+		
+		setTileIndex : function(col, row, tileIndex) {
 			tiles = tiles || [];
 			if (!tiles[row]) tiles[row] = [];
 			tiles[row][col] = srcTile.tileIndex;
@@ -89,10 +93,14 @@ var tinyMapEditor = (function() {
 
         eraseTile : function(e) {		
 			const destTile = this.getTile(e);
-			map.clearRect(destTile.col * tileSize, destTile.row * tileSize, tileSize, tileSize);
-			this.setTileIndex(destTile.row, destTile.col, 0);
+			this.eraseTileByCoord(destTile.col, destTile.row);
+			this.setTileIndex(destTile.col, destTile.row, 0);
         },
 
+        eraseTileByCoord : function(col, row) {		
+			map.clearRect(col * tileSize, row * tileSize, tileSize, tileSize);
+		},
+		
         drawMap : function() {
         },
 
@@ -190,7 +198,6 @@ var tinyMapEditor = (function() {
 				if (srcTile) {
 					srcTile.tileIndex = srcTile.col + srcTile.row * pal.canvas.width / tileSize + 1;
 				}
-				console.log('srcTile', srcTile);
 				
                 _this.drawTool();
             }, false);

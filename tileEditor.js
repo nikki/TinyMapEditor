@@ -185,8 +185,30 @@ var tinyMapEditor = (function() {
 
         outputJSON : function() {
 			this.prepareMapStructure();
+			
+			const project = {
+				tool: {
+					name: 'TinyMapEditor',
+					version: '0.7.0',
+					format: '0.1.0'
+				},
+				options: {
+					tileZoom,
+					tileSize,
+					mapWidth: width,
+					mapHeight: height
+				},
+				maps: [
+					{
+						tileIndexes: tiles
+					}
+				],
+				tileSet: {
+					src: sprite.src
+				}
+			};
 					
-            const output = neatJSON(tiles);
+            const output = neatJSON(project);
             doc.getElementsByTagName('textarea')[0].value = output;
         },
 

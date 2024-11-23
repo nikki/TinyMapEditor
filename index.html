@@ -32,8 +32,10 @@
                 <label>Tiles</label>
 				<div class="scrollable">
 					<canvas id="palette" class="zoomable"></canvas>
-				</div>
-                <input id="tileInput" type="file" accept="image/*" />
+				</div>                
+                <p class="card">
+					<label>Tileset to load:<input id="tileInput" type="file" accept="image/*" /></label>
+				</p>
             </li>
             <li id="selected">
                 <label>Selected Tile</label>
@@ -43,9 +45,12 @@
             <li id="tools">
                 <label>Tools</label>
                 <p><input id="erase" type="button" value="Tile Eraser" /></p>
-                <p><input id="build" type="button" value="Save Project As..." /></p>
                 <p><input id="clear" type="button" value="Clear Canvas" /></p>
 
+                <p><input id="build" type="button" value="Save Project As..." /></p>
+                <p class="card">
+					<label>Project to load:<input id="loadProject" type="file" accept="application/json" /></label>
+				</p>
             </li>
         </ul>
     </menu>

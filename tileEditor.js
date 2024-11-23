@@ -234,6 +234,8 @@ var tinyMapEditor = (function() {
 			tiles = project.maps[0].tileIndexes;
 			this.saveMap();
 			
+			storage.put('tileSet', project.tileSet);
+
 			this.destroy();
 			this.init();
 		},

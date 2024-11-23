@@ -211,7 +211,7 @@ var tinyMapEditor = (function() {
 				}
 			};
 					
-            const output = neatJSON(project);
+            const output = neatJSON(project, { afterColon: 1, afterComma: 1, objectPadding: 1 });
 			
 			var blob = new Blob([output], { type: 'application/json' });
 			saveAs(blob, "TinyMapEditor.project.json");

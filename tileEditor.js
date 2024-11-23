@@ -217,9 +217,17 @@ var tinyMapEditor = (function() {
 		
 		inputJSON: function(json) {
 			const project = JSON.parse(json);
+			
 			if (!project || !project.tool || project.tool.name !== 'TinyMapEditor') {
 				throw new Error('This does not seem to be a TinyMapEditor JSON project.');
 			}
+			
+			if (project.tool.format !== '0.1.0') {
+				throw new Error('Unknown format: ' + project.tool.format);
+			}
+			
+			this.loadSizeVariablesFromObject(project.options);
+			this.updateSizeVariables();
 		},
 
 		updateSizeVariables : function() {
@@ -239,7 +247,10 @@ var tinyMapEditor = (function() {
 		},
 
 		loadSizeVariables : function() {
-			const storedSize = storage.get('mapSize');
+			this.loadSizeVariablesFromObject(storage.get('mapSize'));
+		},
+
+		loadSizeVariablesFromObject : function(storedSize) {
 			if (!storedSize) return;
 			
 			widthInput.value = storedSize.mapWidth;

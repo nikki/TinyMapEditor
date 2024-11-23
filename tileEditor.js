@@ -21,6 +21,7 @@ var tinyMapEditor = (function() {
         build = getById('build'),
         test = getById('test'),
 		tileInput = getById('tileInput'),
+		loadProjectInput = getById('loadProjectInput'),
 		
 		widthInput = getById('width'),
         heightInput = getById('height'),
@@ -213,6 +214,13 @@ var tinyMapEditor = (function() {
 			var blob = new Blob([output], { type: 'application/json' });
 			saveAs(blob, "TinyMapEditor.project.json");
         },
+		
+		inputJSON: function(json) {
+			const project = JSON.parse(json);
+			if (!project || !project.tool || project.tool.name !== 'TinyMapEditor') {
+				throw new Error('This does not seem to be a TinyMapEditor JSON project.');
+			}
+		},
 
 		updateSizeVariables : function() {
 			const inputToNumber = el => +el.value || 1;
@@ -315,6 +323,27 @@ var tinyMapEditor = (function() {
 					});
 				}
 				fr.readAsDataURL(file);
+			 });
+			 
+			 /**
+			  * Project file event			
+			  */
+			loadProjectInput.addEventListener('change', () => {
+				if (!loadProjectInput.files.length) return;
+				
+				const file = loadProjectInput.files[0];
+						 
+				const fr = new FileReader();
+				fr.onload = function () {
+					try {
+						_this.inputJSON(fr.result);
+					} catch (e) {
+						const prefix = 'Error loading project';
+						console.error(prefix, e);
+						alert(prefix + ': ' + e);
+					}
+				}
+				fr.readAsText(file);
 			 });
 			 
 			/**

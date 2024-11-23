@@ -228,6 +228,12 @@ var tinyMapEditor = (function() {
 			
 			this.loadSizeVariablesFromObject(project.options);
 			this.updateSizeVariables();
+			
+			tiles = project.maps[0].tileIndexes;
+			this.saveMap();
+			
+			this.destroy();
+			this.init();
 		},
 
 		updateSizeVariables : function() {

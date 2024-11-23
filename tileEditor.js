@@ -13,6 +13,7 @@ var tinyMapEditor = (function() {
         tileZoom = 1,
         srcTile = 0,
         sprite = new Image(),
+		tileSetName,
         tiles, // used for demo, not *really* needed atm
         alpha,
 
@@ -21,6 +22,7 @@ var tinyMapEditor = (function() {
         build = getById('build'),
         test = getById('test'),
 		tileInput = getById('tileInput'),
+		loadProjectInput = getById('loadProjectInput'),
 		
 		widthInput = getById('width'),
         heightInput = getById('height'),
@@ -189,7 +191,7 @@ var tinyMapEditor = (function() {
 			const project = {
 				tool: {
 					name: 'TinyMapEditor',
-					version: '0.7.0',
+					version: '0.8.0',
 					format: '0.1.0'
 				},
 				options: {
@@ -204,15 +206,39 @@ var tinyMapEditor = (function() {
 					}
 				],
 				tileSet: {
+					name: tileSetName,
 					src: sprite.src
 				}
 			};
 					
-            const output = neatJSON(project);
+            const output = neatJSON(project, { afterColon: 1, afterComma: 1, objectPadding: 1 });
 			
 			var blob = new Blob([output], { type: 'application/json' });
 			saveAs(blob, "TinyMapEditor.project.json");
         },
+		
+		inputJSON: function(json) {
+			const project = JSON.parse(json);
+			
+			if (!project || !project.tool || project.tool.name !== 'TinyMapEditor') {
+				throw new Error('This does not seem to be a TinyMapEditor JSON project.');
+			}
+			
+			if (project.tool.format !== '0.1.0') {
+				throw new Error('Unknown format: ' + project.tool.format);
+			}
+			
+			this.loadSizeVariablesFromObject(project.options);
+			this.updateSizeVariables();
+			
+			tiles = project.maps[0].tileIndexes;
+			this.saveMap();
+			
+			storage.put('tileSet', project.tileSet);
+
+			this.destroy();
+			this.init();
+		},
 
 		updateSizeVariables : function() {
 			const inputToNumber = el => +el.value || 1;
@@ -231,7 +257,10 @@ var tinyMapEditor = (function() {
 		},
 
 		loadSizeVariables : function() {
-			const storedSize = storage.get('mapSize');
+			this.loadSizeVariablesFromObject(storage.get('mapSize'));
+		},
+
+		loadSizeVariablesFromObject : function(storedSize) {
 			if (!storedSize) return;
 			
 			widthInput.value = storedSize.mapWidth;
@@ -308,13 +337,35 @@ var tinyMapEditor = (function() {
 						 
 				const fr = new FileReader();
 				fr.onload = function () {
+					tileSetName = file.name;
 					sprite.src = fr.result;
 					storage.put('tileSet', {
-						name: file.name,
+						name: tileSetName,
 						src: sprite.src
 					});
 				}
 				fr.readAsDataURL(file);
+			 });
+			 
+			 /**
+			  * Project file event			
+			  */
+			loadProjectInput.addEventListener('change', () => {
+				if (!loadProjectInput.files.length) return;
+				
+				const file = loadProjectInput.files[0];
+						 
+				const fr = new FileReader();
+				fr.onload = function () {
+					try {
+						_this.inputJSON(fr.result);
+					} catch (e) {
+						const prefix = 'Error loading project';
+						console.error(prefix, e);
+						alert(prefix + ': ' + e);
+					}
+				}
+				fr.readAsText(file);
 			 });
 			 
 			/**
@@ -333,6 +384,7 @@ var tinyMapEditor = (function() {
 			this.updateSizeVariables();
 			
 			const storedTileSet = storage.get('tileSet');
+			tileSetName = storedTileSet && storedTileSet.name || 'Unnamed';
 			sprite.src = storedTileSet && storedTileSet.src || 'assets/tilemap_32a.png';
 			
             map.canvas.width = width * tileSize;

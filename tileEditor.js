@@ -13,6 +13,7 @@ var tinyMapEditor = (function() {
         tileZoom = 1,
         srcTile = 0,
         sprite = new Image(),
+		tileSetName,
         tiles, // used for demo, not *really* needed atm
         alpha,
 
@@ -205,6 +206,7 @@ var tinyMapEditor = (function() {
 					}
 				],
 				tileSet: {
+					name: tileSetName,
 					src: sprite.src
 				}
 			};
@@ -333,9 +335,10 @@ var tinyMapEditor = (function() {
 						 
 				const fr = new FileReader();
 				fr.onload = function () {
+					tileSetName = file.name;
 					sprite.src = fr.result;
 					storage.put('tileSet', {
-						name: file.name,
+						name: tileSetName,
 						src: sprite.src
 					});
 				}
@@ -379,6 +382,7 @@ var tinyMapEditor = (function() {
 			this.updateSizeVariables();
 			
 			const storedTileSet = storage.get('tileSet');
+			tileSetName = storedTileSet && storedTileSet.name || 'Unnamed';
 			sprite.src = storedTileSet && storedTileSet.src || 'assets/tilemap_32a.png';
 			
             map.canvas.width = width * tileSize;

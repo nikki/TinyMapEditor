@@ -160,16 +160,21 @@ var tinyMapEditor = (function() {
 			mapNameInput.value = mapName;
 		},
 		
-        saveMap : function() {
+        saveMap : function() {			
+			storage.put('map', this.getMapObject());
+        },
+		
+		getMapObject: function() {
 			mapName = mapNameInput.value;
 
 			this.prepareMapStructure();
 			
-			storage.put('map', {
+			return {
+				id: mapId || 0,
 				name: mapName,
 				tileIndexes: tiles
-			});
-        },
+			};
+		},
 
         buildMap : function(e) {
 			this.outputJSON();

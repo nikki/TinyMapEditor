@@ -31,7 +31,7 @@ menu > ul > li > label { display: block; padding: 5px 0; margin-bottom: 10px; bo
     background: -webkit-linear-gradient(top, #eeeeee 0%,#cccccc 100%); background: -o-linear-gradient(top, #eeeeee 0%,#cccccc 100%); background: -ms-linear-gradient(top, #eeeeee 0%,#cccccc 100%);
     background: linear-gradient(top, #eeeeee 0%,#cccccc 100%) }
 /*div { background: white; margin: 5px; border: 1px solid #bbb }*/
-input[type=text] { width: 30px }
+#options input[type=text] { width: 30px }
 
 #options p label { display: inline-block; width: 80px; text-align: left }
 #options p span { display: inline-block; width: 20px; padding-left: 5px; text-align: left }

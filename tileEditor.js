@@ -3,6 +3,7 @@ var tinyMapEditor = (function() {
         doc = document,
 		getById = id =>  document.getElementById(id),
         pal = getById('palette').getContext('2d'),
+		mapNameInput = getById('mapName'),
 		tileEditor = getById('tileEditor'),
         map = tileEditor.getContext('2d'),
 		selectedTile = getById('selectedTile'),
@@ -14,6 +15,7 @@ var tinyMapEditor = (function() {
         srcTile = 0,
         sprite = new Image(),
 		tileSetName,
+		mapName,
         tiles, // used for demo, not *really* needed atm
         alpha,
 
@@ -141,11 +143,17 @@ var tinyMapEditor = (function() {
 					}
 				}
 			}
+			
+			mapName = map.name || 'Unnamed';
+			mapNameInput.value = mapName;
 		},
 		
         saveMap : function() {
+			mapName = mapNameInput.value;
+
 			this.prepareMapStructure();
 			storage.put('map', {
+				name: mapName,
 				tileIndexes: tiles
 			});
         },
@@ -300,6 +308,8 @@ var tinyMapEditor = (function() {
 			};
 			tileEditor.addEventListener('mousedown', handleTileEditorMouseEvent);
 			tileEditor.addEventListener('mousemove', handleTileEditorMouseEvent);
+			
+			mapNameInput.addEventListener('change', () => _this.saveMap());
 			
             /**
              * Image load event

@@ -16,6 +16,7 @@ var tinyMapEditor = (function() {
         sprite = new Image(),
 		tileSetName,
 		mapName,
+		mapId,
         tiles, // used for demo, not *really* needed atm
         alpha,
 
@@ -38,6 +39,17 @@ var tinyMapEditor = (function() {
 			return json && JSON.parse(json);
 		},
 		put: (k, v) => localStorage[STORAGE_PREFIX + k] = JSON.stringify(v)
+	};
+	
+	const maps = {
+		
+		loadAll: () => {
+			this.data = storage.get('maps') || [];
+		},
+		
+		saveAll: () => {
+			storage.put('maps', this.data || []);
+		}
 	};
 
     var app = {
@@ -152,6 +164,7 @@ var tinyMapEditor = (function() {
 			mapName = mapNameInput.value;
 
 			this.prepareMapStructure();
+			
 			storage.put('map', {
 				name: mapName,
 				tileIndexes: tiles
@@ -195,6 +208,7 @@ var tinyMapEditor = (function() {
 
         outputJSON : function() {
 			this.prepareMapStructure();
+			maps.saveAll();
 			
 			const project = {
 				tool: {
@@ -410,10 +424,15 @@ var tinyMapEditor = (function() {
         }
     };
 
-
+	try {
+		maps.loadAll();
+	} catch (e) {
+		console.error('Error loading maps', e);
+	}
 
     app.bindEvents();
     app.init();
+		
     return app;
 
 })();

@@ -51,6 +51,10 @@ var tinyMapEditor = (function() {
 			storage.put('maps', this.data || []);
 		},
 		
+		listAll: function() {
+			return this.data;
+		},
+		
 		upsert: function(map) {
 			const {id, ...remaining} = map;
 			const mapIds = this.data.map(m => m.id);
@@ -254,11 +258,7 @@ var tinyMapEditor = (function() {
 					mapWidth: width,
 					mapHeight: height
 				},
-				maps: [
-					{
-						tileIndexes: tiles
-					}
-				],
+				maps: maps.listAll(),
 				tileSet: {
 					name: tileSetName,
 					src: sprite.src

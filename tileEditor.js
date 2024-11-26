@@ -30,7 +30,9 @@ var tinyMapEditor = (function() {
 		widthInput = getById('width'),
         heightInput = getById('height'),
         tileSizeInput = getById('tileSize'),
-		tileZoomInput = getById('tileZoom');
+		tileZoomInput = getById('tileZoom'),
+		
+		mapList = getById('mapList');
 		
 	const STORAGE_PREFIX = 'TinyMapEditor.';
 	const storage = {
@@ -145,6 +147,14 @@ var tinyMapEditor = (function() {
             srcTile ? ctx.drawImage(sprite, srcTile.col * tileSize, srcTile.row * tileSize, tileSize, tileSize, 0, 0, tileSize, tileSize) : eraser();
 			selectedTileIndex.innerHTML = srcTile ? srcTile.tileIndex : 'None';
         },
+		
+		drawMapList: function() {
+			mapList.innerHTML = maps.listAll()
+				.map(({ name, id }) => {
+					return `<p><input type="radio" name="selectedMap" value="${id}">${name}</input></p>`;
+				})
+				.join('\n');
+		},
 
         eraseTile : function(e) {		
 			const destTile = this.getTile(e);
@@ -448,6 +458,7 @@ var tinyMapEditor = (function() {
 			map.canvas.style.zoom = tileZoom;
 			
             this.drawTool();
+			this.drawMapList();
         },
 
         destroy : function() {

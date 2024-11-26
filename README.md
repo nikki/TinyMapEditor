@@ -7,10 +7,10 @@ Improvements over the original:
 - Can customize the tile size;
 - Can adjust zoom level;
 - Can upload a custom tileset;
-- Persists the map on the browser's local storage, so that it will be left the way the user left, when returning to the app.
+- Persists the map on the browser's local storage, so that it will be left the way the user left, when returning to the app;
+- Export the entire project to JSON.
 
 TODO:
 
-- Export the entire project to JSON;
 - Implement multiple maps;
 - Implement support for custom metadata.

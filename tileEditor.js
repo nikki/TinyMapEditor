@@ -180,7 +180,8 @@ var tinyMapEditor = (function() {
 					}
 				}
 			}
-			
+
+			mapId = map.id || 0;
 			mapName = map.name || 'Unnamed';
 			mapNameInput.value = mapName;
 		},
@@ -239,6 +240,7 @@ var tinyMapEditor = (function() {
         outputJSON : function() {
 			this.prepareMapStructure();
 			mapId = maps.upsert(this.getMapObject());
+			this.saveMap();
 			
 			const project = {
 				tool: {
@@ -462,6 +464,9 @@ var tinyMapEditor = (function() {
 
     app.bindEvents();
     app.init();
+	
+	window.app = app;
+	window.maps = maps;
 		
     return app;
 

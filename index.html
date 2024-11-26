@@ -14,13 +14,21 @@
         <p>More about this project &amp; source code here:
             <a href="https://github.com/haroldo-ok/TinyMapEditor">https://github.com/haroldo-ok/TinyMapEditor</a></p>
     </header>
+	
+	<nav class="tool">
+        <ul>
+            <li id="mapList">
+                <label>Maps</label>
+            </li>
+		</ul>
+	</nav>
 
     <section>
 		<p><label>Map name: <input type="text" value="Unnamed" size="32" id="mapName" /></label></p>
         <canvas id="tileEditor" class="zoomable"></canvas>
     </section>
 
-    <menu>
+    <menu class="tool">
         <ul>
             <li id="options">
                 <label>Map Options</label>

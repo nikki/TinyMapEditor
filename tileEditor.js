@@ -16,6 +16,7 @@ var tinyMapEditor = (function() {
         sprite = new Image(),
 		tileSetName,
 		mapName,
+		mapId,
         tiles, // used for demo, not *really* needed atm
         alpha,
 
@@ -38,6 +39,46 @@ var tinyMapEditor = (function() {
 			return json && JSON.parse(json);
 		},
 		put: (k, v) => localStorage[STORAGE_PREFIX + k] = JSON.stringify(v)
+	};
+	
+	const maps = {
+		
+		loadAll: function() {
+			this.data = storage.get('maps') || [];
+		},
+		
+		saveAll: function() {
+			storage.put('maps', this.data || []);
+		},
+		
+		listAll: function() {
+			return this.data;
+		},
+		
+		upsert: function(map) {
+			const {id, ...remaining} = map;
+			const mapIds = this.data.map(m => m.id);
+			let usedId = id;
+			
+			if (id < 1) {
+				// Map with no ID: create ID and append
+				const maxId = mapIds.length ? Math.max(...mapIds) : 0;
+				usedId = maxId + 1;
+				this.data.push({
+					id: usedId,
+					...remaining
+				});						
+			} else if (mapIds.includes(id)) {
+				// Map with existing ID: replace it.
+				this.data = this.data.map(existingMap => existingMap.id === id ? map : existingMap);
+			} else {
+				// Map with non-existing ID: append
+				this.data.push(map);
+			}
+			
+			this.saveAll();
+			return usedId;
+		}
 	};
 
     var app = {
@@ -143,20 +184,27 @@ var tinyMapEditor = (function() {
 					}
 				}
 			}
-			
+
+			mapId = map.id || 0;
 			mapName = map.name || 'Unnamed';
 			mapNameInput.value = mapName;
 		},
 		
-        saveMap : function() {
+        saveMap : function() {			
+			storage.put('map', this.getMapObject());
+        },
+		
+		getMapObject: function() {
 			mapName = mapNameInput.value;
 
 			this.prepareMapStructure();
-			storage.put('map', {
+			
+			return {
+				id: mapId || 0,
 				name: mapName,
 				tileIndexes: tiles
-			});
-        },
+			};
+		},
 
         buildMap : function(e) {
 			this.outputJSON();
@@ -195,6 +243,8 @@ var tinyMapEditor = (function() {
 
         outputJSON : function() {
 			this.prepareMapStructure();
+			mapId = maps.upsert(this.getMapObject());
+			this.saveMap();
 			
 			const project = {
 				tool: {
@@ -208,11 +258,7 @@ var tinyMapEditor = (function() {
 					mapWidth: width,
 					mapHeight: height
 				},
-				maps: [
-					{
-						tileIndexes: tiles
-					}
-				],
+				maps: maps.listAll(),
 				tileSet: {
 					name: tileSetName,
 					src: sprite.src
@@ -410,10 +456,18 @@ var tinyMapEditor = (function() {
         }
     };
 
-
+	try {
+		maps.loadAll();
+	} catch (e) {
+		console.error('Error loading maps', e);
+	}
 
     app.bindEvents();
     app.init();
+	
+	window.app = app;
+	window.maps = maps;
+		
     return app;
 
 })();

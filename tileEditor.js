@@ -43,12 +43,37 @@ var tinyMapEditor = (function() {
 	
 	const maps = {
 		
-		loadAll: () => {
+		loadAll: function() {
 			this.data = storage.get('maps') || [];
 		},
 		
-		saveAll: () => {
+		saveAll: function() {
 			storage.put('maps', this.data || []);
+		},
+		
+		upsert: function(map) {
+			const {id, ...remaining} = map;
+			const mapIds = this.data.map(m => m.id);
+			let usedId = id;
+			
+			if (id < 1) {
+				// Map with no ID: create ID and append
+				const maxId = mapIds.length ? Math.max(...mapIds) : 0;
+				usedId = maxId + 1;
+				this.data.push({
+					id: usedId,
+					...remaining
+				});						
+			} else if (mapIds.includes(id)) {
+				// Map with existing ID: replace it.
+				this.data = this.data.map(existingMap => existingMap.id === id ? map : existingMap);
+			} else {
+				// Map with non-existing ID: append
+				this.data.push(map);
+			}
+			
+			this.saveAll();
+			return usedId;
 		}
 	};
 
@@ -213,7 +238,7 @@ var tinyMapEditor = (function() {
 
         outputJSON : function() {
 			this.prepareMapStructure();
-			maps.saveAll();
+			mapId = maps.upsert(this.getMapObject());
 			
 			const project = {
 				tool: {

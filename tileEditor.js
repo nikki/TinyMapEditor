@@ -151,16 +151,24 @@ var tinyMapEditor = (function() {
 		drawMapList: function() {
 			mapList.innerHTML = maps.listAll()
 				.map(({ name, id }) => {
-					return `<p><input type="radio" name="selectedMap" value="${id}">${name}</input></p>`;
+					return `<p><label><input type="radio" name="selectedMap" value="${id}" />${name}</label></p>`;
 				})
 				.join('\n');
+		},
+		
+		selectMap: function(e) {
+			const target = e.target || e.srcElement;
+			if (target.name !== 'selectedMap') return;
+				
+			const selectedId = parseInt(target.value);
+			console.log(selectedId);
 		},
 
         eraseTile : function(e) {		
 			const destTile = this.getTile(e);
 			this.eraseTileByCoord(destTile.col, destTile.row);
 			this.setTileIndex(destTile.col, destTile.row, 0);
-        },
+        },		
 
         eraseTileByCoord : function(col, row) {		
 			map.clearRect(col * tileSize, row * tileSize, tileSize, tileSize);
@@ -349,6 +357,11 @@ var tinyMapEditor = (function() {
 				
                 _this.drawTool();
             }, false);
+			
+			/**
+			 * Map list events.
+			 */
+			mapList.addEventListener('change', _this.selectMap);
 			
 			/***
 			 * Tile editor events

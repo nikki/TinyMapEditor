@@ -57,6 +57,10 @@ var tinyMapEditor = (function() {
 			return this.data;
 		},
 		
+		findById: function(id) {
+			return this.data.find(m => m.id === id);
+		},
+		
 		upsert: function(map) {
 			const {id, ...remaining} = map;
 			const mapIds = this.data.map(m => m.id);
@@ -151,7 +155,7 @@ var tinyMapEditor = (function() {
 		drawMapList: function() {
 			mapList.innerHTML = maps.listAll()
 				.map(({ name, id }) => {
-					return `<p><label><input type="radio" name="selectedMap" value="${id}" />${name}</label></p>`;
+					return `<p><label><input type="radio" name="selectedMap" value="${id}" ${id === mapId ? 'checked' : ''} />${name}</label></p>`;
 				})
 				.join('\n');
 		},
@@ -159,9 +163,15 @@ var tinyMapEditor = (function() {
 		selectMap: function(e) {
 			const target = e.target || e.srcElement;
 			if (target.name !== 'selectedMap') return;
-				
+			
+			this.saveCurrentMapToMapList();
+
 			const selectedId = parseInt(target.value);
-			console.log(selectedId);
+			const selectedMap = maps.findById(selectedId);
+			if (!selectedMap) throw new Error("Couldn't find map with ID = " + target.value);
+			
+			storage.put('map', selectedMap);
+			this.loadMap();
 		},
 
         eraseTile : function(e) {		
@@ -206,6 +216,8 @@ var tinyMapEditor = (function() {
 			mapId = map.id || 0;
 			mapName = map.name || 'Unnamed';
 			mapNameInput.value = mapName;
+			
+			this.drawMapList();
 		},
 		
         saveMap : function() {			
@@ -258,11 +270,16 @@ var tinyMapEditor = (function() {
 				tiles[row] = tilesRow;
 			}
 		},
-
-        outputJSON : function() {
+		
+		saveCurrentMapToMapList : function() {
 			this.prepareMapStructure();
 			mapId = maps.upsert(this.getMapObject());
 			this.saveMap();
+			this.drawMapList();
+		},
+
+        outputJSON : function() {
+			this.saveCurrentMapToMapList();
 			
 			const project = {
 				tool: {
@@ -361,7 +378,7 @@ var tinyMapEditor = (function() {
 			/**
 			 * Map list events.
 			 */
-			mapList.addEventListener('change', _this.selectMap);
+			mapList.addEventListener('change', e => _this.selectMap(e));
 			
 			/***
 			 * Tile editor events
